@@ -1,0 +1,116 @@
+---
+import AdminLayout from '../../components/layout/AdminLayout.astro';
+import { pedidos } from '../../lib/mocks/pedidos.js';
+import { libros } from '../../lib/mocks/libros.js';
+import { revistas } from '../../lib/mocks/revistas.js';
+
+const pedidosHoy = pedidos.filter(p => p.fecha === '2025-05-02').length;
+const ingresosMes = pedidos.filter(p => p.estado !== 'cancelado').reduce((sum, p) => sum + p.total, 0);
+const stockBajo = [...libros, ...revistas].filter(p => p.stock > 0 && p.stock <= 4).length;
+const clientes = new Set(pedidos.map(p => p.id_cliente)).size;
+
+const recentPedidos = pedidos.slice(0, 10);
+const lowStockItems = [...libros, ...revistas].filter(p => p.stock <= 4 && p.stock > 0).slice(0, 5);
+
+const estadoColor: Record<string, string> = {
+  pendiente: 'bg-warning/10 text-warning',
+  confirmado: 'bg-[#0D0D0D]/10 text-[#0D0D0D]',
+  enviado: 'bg-[#0D0D0D]/10 text-[#0D0D0D]',
+  entregado: 'bg-success/10 text-success',
+  cancelado: 'bg-error/10 text-error',
+};
+---
+
+<AdminLayout title="Dashboard — Admin Sapiens">
+  <div class="p-8">
+    <h1 class="font-playfair font-bold text-3xl text-text mb-8">Dashboard</h1>
+
+    <!-- KPI cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+      {[
+        { label: 'Pedidos hoy', value: pedidosHoy, icon: '📦' },
+        { label: 'Ingresos del mes', value: `S/ ${ingresosMes.toFixed(0)}`, icon: '💰' },
+        { label: 'Stock bajo', value: stockBajo, icon: '⚠️' },
+        { label: 'Clientes', value: clientes, icon: '👥' },
+      ].map(kpi => (
+        <div class="bg-surface border border-border rounded p-5">
+          <div class="flex items-start justify-between mb-3">
+            <span class="text-2xl" aria-hidden="true">{kpi.icon}</span>
+          </div>
+          <p class="font-inter font-bold text-2xl text-text">{kpi.value}</p>
+          <p class="font-inter text-xs text-text-muted mt-1">{kpi.label}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-8">
+      <!-- Recent orders -->
+      <div class="lg:col-span-2">
+        <h2 class="font-inter font-semibold text-text text-base mb-4">Pedidos recientes</h2>
+        <div class="bg-surface border border-border rounded overflow-hidden">
+          <table class="w-full text-sm font-inter">
+            <thead>
+              <tr class="border-b border-border">
+                <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider"># Pedido</th>
+                <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider hidden sm:table-cell">Cliente</th>
+                <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Total</th>
+                <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Estado</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              {recentPedidos.map(pedido => (
+                <tr class="hover:bg-bg transition-colors">
+                  <td class="px-4 py-3">
+                    <a href={`/admin/pedidos/${pedido.id_pedido}`} class="text-text font-medium hover:underline">
+                      #{pedido.id_pedido}
+                    </a>
+                    <p class="text-text-muted text-xs mt-0.5">{pedido.fecha}</p>
+                  </td>
+                  <td class="px-4 py-3 text-text-muted hidden sm:table-cell">{pedido.cliente?.nombre ?? '—'}</td>
+                  <td class="px-4 py-3 text-text font-medium">S/ {pedido.total.toFixed(2)}</td>
+                  <td class="px-4 py-3">
+                    <span class={`px-2 py-0.5 text-xs font-medium rounded capitalize ${estadoColor[pedido.estado]}`}>
+                      {pedido.estado}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div class="px-4 py-3 border-t border-border">
+            <a href="/admin/pedidos" class="font-inter text-xs text-text-muted hover:text-text transition-colors">Ver todos los pedidos →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Low stock alert -->
+      <div>
+        <h2 class="font-inter font-semibold text-text text-base mb-4">Stock bajo</h2>
+        <div class="bg-surface border border-border rounded overflow-hidden">
+          {lowStockItems.length === 0 ? (
+            <div class="p-6 text-center">
+              <p class="font-inter text-text-muted text-sm">Todo en orden ✓</p>
+            </div>
+          ) : (
+            <div class="divide-y divide-border">
+              {lowStockItems.map(item => (
+                <div class="flex items-center justify-between px-4 py-3">
+                  <div class="min-w-0">
+                    <p class="font-inter text-sm text-text line-clamp-1">{item.titulo}</p>
+                    <p class="font-inter text-xs text-text-muted mt-0.5">{'id_libro' in item ? 'Libro' : 'Revista'}</p>
+                  </div>
+                  <span class="font-inter font-bold text-warning text-sm ml-3 flex-shrink-0">
+                    {item.stock} ud.
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+          <div class="px-4 py-3 border-t border-border">
+            <a href="/admin/inventario" class="font-inter text-xs text-text-muted hover:text-text transition-colors">Ver inventario →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</AdminLayout>

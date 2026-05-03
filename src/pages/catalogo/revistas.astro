@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import ProductCard from '../../components/ui/ProductCard.astro';
+import FilterSidebar from '../../components/sections/FilterSidebar';
+import { revistas } from '../../lib/mocks/revistas.js';
+import { categorias } from '../../lib/mocks/categorias.js';
+
+const categoriasWithCount = categorias.map(cat => ({
+  ...cat,
+  count: revistas.filter(r => r.id_categoria === cat.id_categoria).length,
+}));
+---
+
+<BaseLayout title="Revistas — Sapiens">
+  <Header />
+  <main class="max-w-[1280px] mx-auto px-6 py-10">
+    <div class="mb-6">
+      <nav class="flex items-center gap-2 text-xs font-inter text-text-muted mb-4" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-text transition-colors">Inicio</a>
+        <span aria-hidden="true">/</span>
+        <a href="/catalogo" class="hover:text-text transition-colors">Catálogo</a>
+        <span aria-hidden="true">/</span>
+        <span class="text-text" aria-current="page">Revistas</span>
+      </nav>
+      <h1 class="font-playfair font-bold text-4xl text-text">Revistas</h1>
+      <p class="font-inter text-text-muted text-sm mt-2">{revistas.length} títulos disponibles</p>
+    </div>
+
+    <div class="flex gap-10 items-start">
+      <FilterSidebar categorias={categoriasWithCount} client:load />
+      <div class="flex-1 min-w-0">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+          {revistas.map(revista => (
+            <ProductCard producto={revista} tipo="revista" />
+          ))}
+        </div>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

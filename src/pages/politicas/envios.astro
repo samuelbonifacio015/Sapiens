@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+---
+
+<BaseLayout title="Política de Envíos — Sapiens">
+  <Header />
+  <main class="max-w-[800px] mx-auto px-6 py-10">
+    <nav class="flex items-center gap-2 text-xs font-inter text-text-muted mb-8" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-text transition-colors">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-text" aria-current="page">Política de envíos</span>
+    </nav>
+    <h1 class="font-playfair font-bold text-4xl text-text mb-8">Política de envíos</h1>
+    <div class="prose prose-sm font-inter text-text max-w-none space-y-6">
+      <section>
+        <h2 class="font-playfair font-bold text-2xl text-text mb-3">Cobertura</h2>
+        <p class="text-text-muted leading-relaxed">Realizamos envíos a todo el Perú. Lima Metropolitana y provincias.</p>
+      </section>
+      <section>
+        <h2 class="font-playfair font-bold text-2xl text-text mb-3">Tiempos de entrega</h2>
+        <ul class="list-none space-y-2">
+          <li class="flex items-start gap-3">
+            <span class="w-2 h-2 bg-success rounded-full mt-1.5 flex-shrink-0" aria-hidden="true"></span>
+            <span class="text-text-muted"><strong class="text-text">Lima Metropolitana:</strong> 1–2 días hábiles</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="w-2 h-2 bg-warning rounded-full mt-1.5 flex-shrink-0" aria-hidden="true"></span>
+            <span class="text-text-muted"><strong class="text-text">Provincias:</strong> 3–5 días hábiles</span>
+          </li>
+        </ul>
+      </section>
+      <section>
+        <h2 class="font-playfair font-bold text-2xl text-text mb-3">Costos</h2>
+        <p class="text-text-muted leading-relaxed">El costo de envío se calcula al momento del checkout según tu distrito. Envío gratuito en pedidos mayores a S/ 150.</p>
+      </section>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

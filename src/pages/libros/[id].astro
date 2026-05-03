@@ -1,0 +1,141 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import StockIndicator from '../../components/ui/StockIndicator.astro';
+import Badge from '../../components/ui/Badge.astro';
+import ProductCard from '../../components/ui/ProductCard.astro';
+import { libros } from '../../lib/mocks/libros.js';
+
+export function getStaticPaths() {
+  return libros.map(libro => ({
+    params: { id: String(libro.id_libro) },
+    props: { libro },
+  }));
+}
+
+const { libro } = Astro.props;
+
+const related = libros
+  .filter(l => l.id_autor === libro.id_autor && l.id_libro !== libro.id_libro)
+  .slice(0, 4)
+  .map(l => ({ producto: l, tipo: 'libro' as const }));
+
+const placeholderBg = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0'][libro.id_libro % 4];
+---
+
+<BaseLayout title={`${libro.titulo} — Sapiens`}>
+  <Header />
+  <main class="max-w-[1280px] mx-auto px-6 py-10">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs font-inter text-text-muted mb-8 flex-wrap" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-text transition-colors">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <a href="/catalogo/libros" class="hover:text-text transition-colors">Libros</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-text line-clamp-1" aria-current="page">{libro.titulo}</span>
+    </nav>
+
+    <!-- Product detail -->
+    <div class="grid md:grid-cols-5 gap-10 lg:gap-16">
+      <!-- Left: Cover -->
+      <div class="md:col-span-2">
+        <div class="relative">
+          <Badge variant="default" class="absolute top-3 left-3 z-10">
+            {libro.categoria?.nombre_categoria}
+          </Badge>
+          <div
+            class="aspect-[2/3] w-full rounded border border-border flex items-end p-4"
+            style={`background-color: ${placeholderBg}`}
+            role="img"
+            aria-label={`Portada de ${libro.titulo}`}
+          >
+            <span class="text-xs font-inter font-medium text-[#5C5C5C] uppercase tracking-widest">{libro.titulo}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Info -->
+      <div class="md:col-span-3 flex flex-col gap-5">
+        <div>
+          <h1 class="font-playfair font-bold text-3xl lg:text-4xl text-text leading-tight">{libro.titulo}</h1>
+          {libro.autor && (
+            <p class="mt-2 font-inter text-text-muted text-base">
+              por{' '}
+              <a href={`/autores/${libro.id_autor}`} class="text-text underline hover:no-underline">
+                {libro.autor.nombre_autor}
+              </a>
+            </p>
+          )}
+        </div>
+
+        <div class="flex items-center gap-4">
+          <span class="font-inter font-bold text-3xl text-text">S/ {libro.precio.toFixed(2)}</span>
+          <StockIndicator stock={libro.stock} showCount={true} />
+        </div>
+
+        <!-- Metadata table -->
+        <table class="text-sm font-inter border-collapse">
+          <tbody>
+            {[
+              ['ISBN', libro.isbn],
+              ['Editorial', libro.editorial],
+              ['Año de publicación', libro.anio_publicacion],
+              ['Categoría', libro.categoria?.nombre_categoria],
+            ].map(([key, val]) => val && (
+              <tr class="border-b border-border">
+                <td class="py-2 pr-6 text-text-muted w-1/2">{key}</td>
+                <td class="py-2 text-text">{val}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <!-- Quantity + actions -->
+        <div class="flex flex-col gap-3 pt-2">
+          <div class="flex items-center gap-4">
+            <span class="font-inter text-sm text-text-muted">Cantidad</span>
+            <div class="flex items-center border border-border rounded">
+              <button type="button" aria-label="Reducir cantidad" class="w-10 h-10 flex items-center justify-center text-text hover:bg-bg transition-colors font-inter text-lg">−</button>
+              <span class="w-12 text-center font-inter text-sm text-text" aria-live="polite">1</span>
+              <button type="button" aria-label="Aumentar cantidad" class="w-10 h-10 flex items-center justify-center text-text hover:bg-bg transition-colors font-inter text-lg">+</button>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            disabled={libro.stock === 0}
+            aria-label={libro.stock === 0 ? 'Sin stock' : `Agregar ${libro.titulo} al carrito`}
+            class="w-full py-4 bg-[#0D0D0D] text-[#F8F8F5] font-inter font-medium text-sm rounded hover:bg-[#1A1A1A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {libro.stock === 0 ? 'Sin stock' : 'Agregar al carrito'}
+          </button>
+
+          <button
+            type="button"
+            disabled={libro.stock === 0}
+            aria-label={libro.stock === 0 ? 'Sin stock' : `Comprar ${libro.titulo} ahora`}
+            class="w-full py-4 bg-transparent border border-[#0D0D0D] text-[#0D0D0D] font-inter font-medium text-sm rounded hover:bg-[#0D0D0D] hover:text-[#F8F8F5] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {libro.stock === 0 ? 'No disponible' : 'Comprar ahora'}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related books -->
+    {related.length > 0 && (
+      <section class="mt-16 pt-12 border-t border-border">
+        <h2 class="font-playfair font-bold text-2xl text-text mb-8">
+          Otros libros de {libro.autor?.nombre_autor}
+        </h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+          {related.map(({ producto, tipo }) => (
+            <ProductCard producto={producto} tipo={tipo} />
+          ))}
+        </div>
+      </section>
+    )}
+  </main>
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,85 @@
+---
+interface Props {
+  title?: string;
+  activeSection?: string;
+}
+
+const { title = 'Admin — Sapiens', activeSection = '' } = Astro.props;
+
+const navItems = [
+  { href: '/admin', label: 'Dashboard', icon: 'grid' },
+  { href: '/admin/catalogo', label: 'Catálogo', icon: 'book-open' },
+  { href: '/admin/libros', label: 'Libros', icon: 'book' },
+  { href: '/admin/revistas', label: 'Revistas', icon: 'newspaper' },
+  { href: '/admin/categorias', label: 'Categorías', icon: 'tag' },
+  { href: '/admin/autores', label: 'Autores', icon: 'user' },
+  { href: '/admin/pedidos', label: 'Pedidos', icon: 'package', badge: 3 },
+  { href: '/admin/clientes', label: 'Clientes', icon: 'users' },
+  { href: '/admin/inventario', label: 'Inventario', icon: 'layers' },
+  { href: '/admin/reportes', label: 'Reportes', icon: 'bar-chart' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body class="font-inter bg-bg text-text min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="w-[200px] flex-shrink-0 bg-surface border-r border-border flex flex-col min-h-screen sticky top-0 h-screen overflow-y-auto">
+      <div class="px-5 py-6 border-b border-border">
+        <a href="/" aria-label="Ir al sitio principal">
+          <span class="font-playfair font-bold text-lg tracking-[0.15em] uppercase text-text">Sapiens</span>
+        </a>
+        <p class="text-[10px] font-inter text-text-muted uppercase tracking-widest mt-1">Admin</p>
+      </div>
+
+      <nav class="flex flex-col py-4 flex-1" aria-label="Navegación admin">
+        {navItems.map(item => {
+          const isActive = currentPath === item.href || (item.href !== '/admin' && currentPath.startsWith(item.href));
+          return (
+            <a
+              href={item.href}
+              class={`flex items-center justify-between px-5 py-2.5 text-sm font-inter transition-colors ${
+                isActive
+                  ? 'bg-[#0D0D0D] text-[#F8F8F5] font-medium'
+                  : 'text-text-muted hover:text-text hover:bg-bg'
+              }`}
+              aria-current={isActive ? 'page' : undefined}
+            >
+              <span>{item.label}</span>
+              {item.badge && (
+                <span class="flex items-center justify-center w-5 h-5 bg-accent text-[#0D0D0D] text-[10px] font-bold rounded-full">
+                  {item.badge}
+                </span>
+              )}
+            </a>
+          );
+        })}
+      </nav>
+
+      <div class="px-5 py-4 border-t border-border">
+        <a href="/" class="text-xs font-inter text-text-muted hover:text-text transition-colors">
+          ← Ver sitio
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="flex-1 overflow-auto">
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  @import '../../styles/tokens.css';
+</style>

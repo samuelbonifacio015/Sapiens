@@ -1,0 +1,18 @@
+---
+interface Props {
+  stock: number;
+  showCount?: boolean;
+}
+
+const { stock, showCount = false } = Astro.props;
+
+const status = stock === 0 ? 'error' : stock <= 4 ? 'warning' : 'success';
+const label = stock === 0 ? 'Sin stock' : stock <= 4 ? `Stock limitado (${stock})` : showCount ? `Disponible (${stock})` : 'Disponible';
+const dotColor = { success: 'bg-success', warning: 'bg-warning', error: 'bg-error' }[status];
+const textColor = { success: 'text-success', warning: 'text-warning', error: 'text-error' }[status];
+---
+
+<span class={`inline-flex items-center gap-1.5 text-sm font-inter ${textColor}`} aria-label={`Estado de stock: ${label}`}>
+  <span class={`w-2 h-2 rounded-full flex-shrink-0 ${dotColor}`} aria-hidden="true"></span>
+  {label}
+</span>

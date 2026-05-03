@@ -1,0 +1,87 @@
+---
+import AdminLayout from '../../../components/layout/AdminLayout.astro';
+import { pedidos } from '../../../lib/mocks/pedidos.js';
+import { libros } from '../../../lib/mocks/libros.js';
+import { revistas } from '../../../lib/mocks/revistas.js';
+
+export function getStaticPaths() {
+  return pedidos.map(p => ({
+    params: { id: String(p.id_pedido) },
+    props: { pedido: p },
+  }));
+}
+
+const { pedido } = Astro.props;
+
+const estadoColor: Record<string, string> = {
+  pendiente: 'bg-warning text-[#0D0D0D]',
+  confirmado: 'bg-[#0D0D0D] text-[#F8F8F5]',
+  enviado: 'bg-[#0D0D0D] text-[#F8F8F5]',
+  entregado: 'bg-success text-white',
+  cancelado: 'bg-error text-white',
+};
+---
+
+<AdminLayout title={`Pedido #${pedido.id_pedido} — Admin`}>
+  <div class="p-8 max-w-3xl">
+    <nav class="flex items-center gap-2 text-xs font-inter text-text-muted mb-6" aria-label="Breadcrumb">
+      <a href="/admin" class="hover:text-text transition-colors">Dashboard</a>
+      <span aria-hidden="true">/</span>
+      <a href="/admin/pedidos" class="hover:text-text transition-colors">Pedidos</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-text" aria-current="page">#{pedido.id_pedido}</span>
+    </nav>
+
+    <div class="flex items-center justify-between gap-4 mb-8">
+      <h1 class="font-playfair font-bold text-3xl text-text">Pedido #{pedido.id_pedido}</h1>
+      <span class={`px-3 py-1.5 text-xs font-inter font-semibold rounded capitalize ${estadoColor[pedido.estado]}`}>
+        {pedido.estado}
+      </span>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-6 mb-8">
+      {pedido.cliente && (
+        <div class="bg-surface border border-border rounded p-5">
+          <h2 class="font-inter font-semibold text-text text-sm mb-3">Cliente</h2>
+          <p class="font-inter text-sm text-text">{pedido.cliente.nombre}</p>
+          <p class="font-inter text-sm text-text-muted">{pedido.cliente.email}</p>
+          {pedido.cliente.telefono && <p class="font-inter text-sm text-text-muted">{pedido.cliente.telefono}</p>}
+        </div>
+      )}
+      <div class="bg-surface border border-border rounded p-5">
+        <h2 class="font-inter font-semibold text-text text-sm mb-3">Detalles</h2>
+        <p class="font-inter text-sm text-text-muted">Fecha: {pedido.fecha}</p>
+        <p class="font-inter text-sm text-text-muted">Total: <strong class="text-text">S/ {pedido.total.toFixed(2)}</strong></p>
+      </div>
+    </div>
+
+    <div class="bg-surface border border-border rounded overflow-hidden">
+      <div class="px-5 py-4 border-b border-border">
+        <h2 class="font-inter font-semibold text-text text-sm">Productos</h2>
+      </div>
+      <div class="divide-y divide-border">
+        {(pedido.detalles ?? []).map(detalle => {
+          const libro = detalle.id_libro ? libros.find(l => l.id_libro === detalle.id_libro) : null;
+          const revista = detalle.id_revista ? revistas.find(r => r.id_revista === detalle.id_revista) : null;
+          const producto = libro ?? revista;
+          if (!producto) return null;
+          return (
+            <div class="flex items-center justify-between px-5 py-4">
+              <div>
+                <p class="font-inter text-sm text-text">{producto.titulo}</p>
+                <p class="font-inter text-xs text-text-muted">{libro ? 'Libro' : 'Revista'} × {detalle.cantidad}</p>
+              </div>
+              <span class="font-inter font-medium text-text text-sm">
+                S/ {(detalle.precio_unitario * detalle.cantidad).toFixed(2)}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+      <div class="px-5 py-4 border-t border-border flex items-center justify-between">
+        <span class="font-inter font-semibold text-text">Total</span>
+        <span class="font-inter font-bold text-xl text-text">S/ {pedido.total.toFixed(2)}</span>
+      </div>
+    </div>
+  </div>
+</AdminLayout>

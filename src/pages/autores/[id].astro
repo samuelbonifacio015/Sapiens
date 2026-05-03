@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import ProductCard from '../../components/ui/ProductCard.astro';
+import { autores } from '../../lib/mocks/autores.js';
+import { libros } from '../../lib/mocks/libros.js';
+
+export function getStaticPaths() {
+  return autores.map(autor => ({
+    params: { id: String(autor.id_autor) },
+    props: { autor },
+  }));
+}
+
+const { autor } = Astro.props;
+const autorLibros = libros.filter(l => l.id_autor === autor.id_autor);
+---
+
+<BaseLayout title={`${autor.nombre_autor} — Sapiens`}>
+  <Header />
+  <main class="max-w-[1280px] mx-auto px-6 py-10">
+    <nav class="flex items-center gap-2 text-xs font-inter text-text-muted mb-8" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-text transition-colors">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <a href="/autores" class="hover:text-text transition-colors">Autores</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-text" aria-current="page">{autor.nombre_autor}</span>
+    </nav>
+
+    <div class="flex items-start gap-6 mb-12">
+      <div class="w-16 h-16 rounded-full bg-[#0D0D0D] flex items-center justify-center flex-shrink-0">
+        <span class="font-playfair font-bold text-2xl text-[#F8F8F5]">{autor.nombre_autor.charAt(0)}</span>
+      </div>
+      <div>
+        <h1 class="font-playfair font-bold text-3xl text-text">{autor.nombre_autor}</h1>
+        {autor.bio && (
+          <p class="font-inter text-text-muted text-base mt-3 max-w-2xl leading-relaxed">{autor.bio}</p>
+        )}
+      </div>
+    </div>
+
+    {autorLibros.length === 0 ? (
+      <div class="flex flex-col items-center justify-center py-20 text-center">
+        <span class="text-5xl mb-4" aria-hidden="true">📚</span>
+        <p class="font-inter text-text-muted">No hay libros disponibles de este autor.</p>
+      </div>
+    ) : (
+      <section>
+        <h2 class="font-playfair font-bold text-2xl text-text mb-6">
+          Libros de {autor.nombre_autor}
+        </h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+          {autorLibros.map(libro => (
+            <ProductCard producto={libro} tipo="libro" />
+          ))}
+        </div>
+      </section>
+    )}
+  </main>
+  <Footer />
+</BaseLayout>

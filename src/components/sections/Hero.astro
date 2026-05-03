@@ -1,0 +1,72 @@
+---
+---
+
+<section class="relative bg-bg overflow-hidden py-20 lg:py-32">
+  <!-- Dot pattern background -->
+  <div class="absolute inset-0 opacity-40" style="background-image: radial-gradient(circle, #E0E0DC 1px, transparent 1px); background-size: 24px 24px;" aria-hidden="true"></div>
+
+  <div class="relative max-w-[1280px] mx-auto px-6">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <!-- Text -->
+      <div class="flex flex-col gap-6">
+        <h1 class="font-playfair font-bold text-4xl sm:text-5xl lg:text-6xl text-text leading-[1.1] tracking-tight">
+          Tu próxima lectura favorita, online.
+        </h1>
+        <p class="font-inter text-text-muted text-lg leading-relaxed max-w-md">
+          Libros y revistas físicos y digitales. Catálogo actualizado con entrega en Lima y provincias.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 mt-2">
+          <a
+            href="/catalogo"
+            class="inline-flex items-center justify-center px-8 py-4 bg-[#0D0D0D] text-[#F8F8F5] font-inter font-medium text-sm rounded tracking-wide hover:bg-[#1A1A1A] transition-colors"
+          >
+            Explorar catálogo
+          </a>
+          <a
+            href="/catalogo/libros"
+            class="inline-flex items-center justify-center gap-2 px-6 py-4 text-text font-inter font-medium text-sm hover:text-text-muted transition-colors"
+          >
+            Ver novedades
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Visual -->
+      <div class="relative flex justify-center lg:justify-end">
+        <div class="relative flex items-end gap-3">
+          <!-- Stack of book covers -->
+          <div class="relative">
+            <div class="w-28 h-40 sm:w-36 sm:h-52 bg-[#E8E0D5] rounded shadow-xl transform -rotate-6 border border-border" style="box-shadow: -4px 8px 24px rgba(0,0,0,0.15);">
+              <div class="h-full flex items-end p-3">
+                <span class="text-[9px] font-inter font-medium text-[#5C5C5C] uppercase tracking-widest">Literatura</span>
+              </div>
+            </div>
+          </div>
+          <div class="relative z-10">
+            <div class="w-32 h-48 sm:w-40 sm:h-60 bg-[#D5DDE8] rounded shadow-xl border border-border" style="box-shadow: -4px 8px 32px rgba(0,0,0,0.2);">
+              <div class="h-full flex items-end p-3">
+                <span class="text-[9px] font-inter font-medium text-[#5C5C5C] uppercase tracking-widest">Novedades</span>
+              </div>
+            </div>
+          </div>
+          <div class="relative">
+            <div class="w-28 h-44 sm:w-36 sm:h-56 bg-[#D5E8D5] rounded shadow-xl transform rotate-6 border border-border" style="box-shadow: 4px 8px 24px rgba(0,0,0,0.15);">
+              <div class="h-full flex items-end p-3">
+                <span class="text-[9px] font-inter font-medium text-[#5C5C5C] uppercase tracking-widest">Clásicos</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating badge -->
+        <div class="absolute -top-4 -right-4 sm:top-0 sm:right-0 flex items-center justify-center w-28 h-28 bg-[#0D0D0D] rounded-full shadow-lg">
+          <div class="text-center">
+            <span class="block text-accent font-inter font-bold text-lg leading-none">+2,000</span>
+            <span class="block text-[#F8F8F5] text-[9px] font-inter tracking-wider mt-1 uppercase">títulos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

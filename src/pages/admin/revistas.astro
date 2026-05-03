@@ -1,0 +1,42 @@
+---
+import AdminLayout from '../../components/layout/AdminLayout.astro';
+import { revistas } from '../../lib/mocks/revistas.js';
+---
+
+<AdminLayout title="Revistas — Admin Sapiens">
+  <div class="p-8">
+    <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+      <h1 class="font-playfair font-bold text-3xl text-text">Revistas</h1>
+      <button type="button" class="px-5 py-2.5 bg-[#0D0D0D] text-[#F8F8F5] font-inter text-sm rounded hover:bg-[#1A1A1A] transition-colors" aria-label="Agregar nueva revista">
+        + Agregar revista
+      </button>
+    </div>
+    <div class="bg-surface border border-border rounded overflow-x-auto">
+      <table class="w-full text-sm font-inter min-w-[500px]">
+        <thead>
+          <tr class="border-b border-border bg-bg">
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Título</th>
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider hidden md:table-cell">Frecuencia</th>
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Precio</th>
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Stock</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          {revistas.map(revista => (
+            <tr class="hover:bg-bg transition-colors">
+              <td class="px-4 py-3">
+                <a href={`/revistas/${revista.id_revista}`} class="font-inter font-medium text-text hover:underline">{revista.titulo}</a>
+                <p class="font-inter text-xs text-text-muted mt-0.5">{revista.issn}</p>
+              </td>
+              <td class="px-4 py-3 text-text-muted hidden md:table-cell">{revista.frecuencia}</td>
+              <td class="px-4 py-3 text-text font-medium">S/ {revista.precio.toFixed(2)}</td>
+              <td class={`px-4 py-3 font-medium ${revista.stock === 0 ? 'text-error' : revista.stock <= 4 ? 'text-warning' : 'text-success'}`}>
+                {revista.stock}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</AdminLayout>

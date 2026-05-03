@@ -1,0 +1,39 @@
+---
+import AdminLayout from '../../components/layout/AdminLayout.astro';
+import { pedidos } from '../../lib/mocks/pedidos.js';
+
+const clientes = pedidos
+  .map(p => p.cliente)
+  .filter(Boolean)
+  .filter((c, i, arr) => arr.findIndex(x => x?.id_cliente === c?.id_cliente) === i);
+---
+
+<AdminLayout title="Clientes — Admin Sapiens">
+  <div class="p-8">
+    <h1 class="font-playfair font-bold text-3xl text-text mb-8">Clientes</h1>
+    <div class="bg-surface border border-border rounded overflow-hidden">
+      <table class="w-full text-sm font-inter">
+        <thead>
+          <tr class="border-b border-border bg-bg">
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Nombre</th>
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Email</th>
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider hidden md:table-cell">Teléfono</th>
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Pedidos</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          {clientes.map(cliente => cliente && (
+            <tr class="hover:bg-bg transition-colors">
+              <td class="px-4 py-3 font-inter font-medium text-text">{cliente.nombre}</td>
+              <td class="px-4 py-3 text-text-muted">{cliente.email}</td>
+              <td class="px-4 py-3 text-text-muted hidden md:table-cell">{cliente.telefono ?? '—'}</td>
+              <td class="px-4 py-3 text-text-muted">
+                {pedidos.filter(p => p.id_cliente === cliente.id_cliente).length}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</AdminLayout>

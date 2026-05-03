@@ -1,0 +1,45 @@
+[33mcommit c978594af29071e146b33ac4150abc37cfb795f2[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m
+Author: Samuel <samuelbonifacio015@gmail.com>
+Date:   Sat May 2 22:26:53 2026 -0500
+
+    fix: upgrade to Astro 6 to resolve dev server errors
+    
+    @astrojs/react@5 depends on Vite 7 while Astro 4 uses Vite 5 internally,
+    causing astro:middleware alias resolution to fail in dev mode. Astro 6
+    uses Vite 7 natively, eliminating the dual-Vite conflict.
+    
+    Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+[33mcommit 2ae32e84f02a8b878800e97cfed29a50cd38fdeb[m
+Author: Samuel <samuelbonifacio015@gmail.com>
+Date:   Sat May 2 20:52:24 2026 -0500
+
+    fix: switch to output static, remove node adapter, move URL params client-side
+
+[33mcommit 83912007ea8a6705fafdf7e67a15e0de34204692[m
+Author: Samuel <samuelbonifacio015@gmail.com>
+Date:   Sat May 2 20:47:52 2026 -0500
+
+    fix: downgrade @astrojs/node to v7 (Astro 4 compatible), remove as const from frontmatter
+
+[33mcommit 3b0c52abdeeba899e4672a5a8341cf86d37e248a[m
+Author: Samuel <samuelbonifacio015@gmail.com>
+Date:   Sat May 2 20:43:18 2026 -0500
+
+    feat: implement Sapiens e-commerce frontend (Astro 4 + React + Tailwind)
+    
+    - Design system: tokens.css (Ink & Electric palette), tailwind.config.mjs
+    - Types: Libro, Revista, Autor, Categoria, Pedido, CartItem interfaces
+    - Mocks: 10 libros, 6 revistas, 6 autores, 5 categorias, 5 pedidos
+    - UI components: Button, Badge, Input, StockIndicator, ProductCard, SearchBar
+    - Layout: Header (sticky, hamburger mobile), Footer, AdminLayout sidebar
+    - Public pages: index, catalogo, categorias, libros/[id], revistas/[id], autores, buscar, ayuda, politicas
+    - Cart: cart-store (localStorage), CartPage, CartItem, CartSummary, CartDrawer, CheckoutWizard
+    - Admin: dashboard KPIs + table, pedidos, inventario (CSV export), libros, revistas, categorias, autores, clientes, reportes
+    - Add @astrojs/node adapter for hybrid output
+
+[33mcommit 31307d6f1cc173cf14ce11e0d0fe1c059b90395e[m
+Author: Samuel <samuelbonifacio015@gmail.com>
+Date:   Sat May 2 20:27:09 2026 -0500
+
+    chore: scaffold Astro 4 + React + Tailwind, output hybrid

@@ -1,0 +1,28 @@
+---
+import AdminLayout from '../../components/layout/AdminLayout.astro';
+import { categorias } from '../../lib/mocks/categorias.js';
+import { libros } from '../../lib/mocks/libros.js';
+import { revistas } from '../../lib/mocks/revistas.js';
+
+const categoriasWithCount = categorias.map(cat => ({
+  ...cat,
+  libros: libros.filter(l => l.id_categoria === cat.id_categoria).length,
+  revistas: revistas.filter(r => r.id_categoria === cat.id_categoria).length,
+}));
+---
+
+<AdminLayout title="Categorías — Admin Sapiens">
+  <div class="p-8">
+    <h1 class="font-playfair font-bold text-3xl text-text mb-8">Categorías</h1>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {categoriasWithCount.map(cat => (
+        <div class="bg-surface border border-border rounded p-5">
+          <h2 class="font-inter font-medium text-text">{cat.nombre_categoria}</h2>
+          <p class="font-inter text-xs text-text-muted mt-2">
+            {cat.libros} libros · {cat.revistas} revistas
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+</AdminLayout>

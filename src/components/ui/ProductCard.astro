@@ -1,0 +1,73 @@
+---
+import type { Libro, Revista } from '../../types/index.js';
+import Badge from './Badge.astro';
+import StockIndicator from './StockIndicator.astro';
+
+interface Props {
+  producto: Libro | Revista;
+  tipo: 'libro' | 'revista';
+}
+
+const { producto, tipo } = Astro.props;
+
+const isLibro = tipo === 'libro';
+const libro = isLibro ? (producto as Libro) : null;
+const revista = !isLibro ? (producto as Revista) : null;
+
+const titulo = producto.titulo;
+const precio = producto.precio;
+const stock = producto.stock;
+const categoriaName = producto.categoria?.nombre_categoria ?? '';
+const autorName = libro?.autor?.nombre_autor ?? '';
+const frecuencia = revista?.frecuencia ?? '';
+
+const href = isLibro ? `/libros/${libro!.id_libro}` : `/revistas/${revista!.id_revista}`;
+const aspectRatio = isLibro ? 'aspect-[2/3]' : 'aspect-[3/4]';
+
+const placeholderColors = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0', '#E8E8D5'];
+const colorIndex = (producto.id_libro ?? producto.id_revista ?? 0) % placeholderColors.length;
+const placeholderBg = placeholderColors[colorIndex];
+---
+
+<article class="group flex flex-col bg-surface border border-border rounded overflow-hidden hover:border-[#0D0D0D] transition-colors duration-150">
+  <a href={href} class="block relative overflow-hidden" aria-label={`Ver detalle de ${titulo}`}>
+    <div class={`${aspectRatio} w-full relative overflow-hidden`} style={`background-color: ${placeholderBg}`}>
+      <div class="absolute inset-0 flex items-end p-3">
+        <span class="text-[10px] font-inter font-medium text-[#5C5C5C] uppercase tracking-widest line-clamp-2">{titulo}</span>
+      </div>
+    </div>
+    <div class="absolute top-2 left-2">
+      {categoriaName && <Badge variant="default">{categoriaName}</Badge>}
+    </div>
+  </a>
+
+  <div class="flex flex-col gap-2 p-4 flex-1">
+    <a href={href} class="group/title">
+      <h3 class="font-playfair font-medium text-text text-base leading-tight line-clamp-2 group-hover/title:underline">
+        {titulo}
+      </h3>
+    </a>
+
+    {autorName && (
+      <p class="text-text-muted text-sm font-inter">{autorName}</p>
+    )}
+
+    {frecuencia && (
+      <p class="text-text-muted text-xs font-inter uppercase tracking-wide">{frecuencia}</p>
+    )}
+
+    <div class="flex items-center justify-between mt-auto pt-2">
+      <span class="font-inter font-bold text-text text-base">S/ {precio.toFixed(2)}</span>
+      <StockIndicator stock={stock} />
+    </div>
+
+    <button
+      type="button"
+      disabled={stock === 0}
+      aria-label={`Agregar ${titulo} al carrito`}
+      class="w-full mt-2 px-4 py-2.5 bg-[#0D0D0D] text-[#F8F8F5] text-sm font-inter font-medium rounded transition-opacity duration-150 hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed md:opacity-0 md:group-hover:opacity-100"
+    >
+      {stock === 0 ? 'Sin stock' : 'Agregar al carrito'}
+    </button>
+  </div>
+</article>

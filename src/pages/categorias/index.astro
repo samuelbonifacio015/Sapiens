@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import { categorias } from '../../lib/mocks/categorias.js';
+import { libros } from '../../lib/mocks/libros.js';
+import { revistas } from '../../lib/mocks/revistas.js';
+
+const categorySlug = (name: string) =>
+  name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
+
+const categoryIcons: Record<string, string> = {
+  'Literatura Peruana': '🇵🇪',
+  'Literatura Internacional': '🌍',
+  'Ciencias y Tecnología': '🔬',
+  'Revistas de Actualidad': '📰',
+  'Infantil y Juvenil': '🌟',
+};
+
+const categoriasWithCount = categorias.map(cat => ({
+  ...cat,
+  count: libros.filter(l => l.id_categoria === cat.id_categoria).length +
+         revistas.filter(r => r.id_categoria === cat.id_categoria).length,
+}));
+---
+
+<BaseLayout title="Categorías — Sapiens">
+  <Header />
+  <main class="max-w-[1280px] mx-auto px-6 py-10">
+    <h1 class="font-playfair font-bold text-4xl text-text mb-8">Categorías</h1>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+      {categoriasWithCount.map(cat => (
+        <a
+          href={`/categorias/${categorySlug(cat.nombre_categoria)}`}
+          class="flex flex-col items-center gap-3 p-8 bg-surface border border-border rounded hover:border-[#0D0D0D] transition-colors duration-150 text-center group"
+          aria-label={`Ver ${cat.nombre_categoria} — ${cat.count} productos`}
+        >
+          <span class="text-5xl" aria-hidden="true">{categoryIcons[cat.nombre_categoria] ?? '📚'}</span>
+          <h2 class="font-inter text-sm font-medium text-text leading-tight">{cat.nombre_categoria}</h2>
+          <p class="font-inter text-xs text-text-muted">{cat.count} productos</p>
+        </a>
+      ))}
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

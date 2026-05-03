@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+
+const faqs = [
+  {
+    q: '¿Cuánto demora el envío?',
+    a: 'Lima Metropolitana: 1-2 días hábiles. Provincias: 3-5 días hábiles según la región.',
+  },
+  {
+    q: '¿Cuáles son los métodos de pago?',
+    a: 'Aceptamos transferencia bancaria (BCP, Interbank, BBVA) y pago contraentrega en Lima.',
+  },
+  {
+    q: '¿Puedo devolver un libro?',
+    a: 'Sí, tienes 7 días desde la entrega para solicitar una devolución. El producto debe estar sin uso.',
+  },
+  {
+    q: '¿Cómo hago seguimiento a mi pedido?',
+    a: 'Ingresa a Mi cuenta → Pedidos. Recibirás un correo con el número de seguimiento cuando tu pedido sea enviado.',
+  },
+  {
+    q: '¿Tienen tiendas físicas?',
+    a: 'Sí, contamos con tiendas en Lima. También puedes elegir recojo en tienda al hacer tu pedido.',
+  },
+];
+---
+
+<BaseLayout title="Ayuda — Sapiens">
+  <Header />
+  <main class="max-w-[1280px] mx-auto px-6 py-10">
+    <h1 class="font-playfair font-bold text-4xl text-text mb-4">Centro de ayuda</h1>
+    <p class="font-inter text-text-muted text-base mb-12 max-w-xl">
+      Resolvemos tus dudas sobre envíos, pagos y devoluciones.
+    </p>
+
+    <div class="max-w-2xl flex flex-col divide-y divide-border">
+      {faqs.map((faq, i) => (
+        <details class="group py-5" name="faq">
+          <summary class="flex items-center justify-between cursor-pointer list-none">
+            <h2 class="font-inter font-medium text-text text-base pr-4">{faq.q}</h2>
+            <span class="flex-shrink-0 text-text-muted transition-transform group-open:rotate-45 font-inter text-xl" aria-hidden="true">+</span>
+          </summary>
+          <p class="font-inter text-text-muted text-sm mt-3 leading-relaxed">{faq.a}</p>
+        </details>
+      ))}
+    </div>
+
+    <div class="mt-16 p-8 bg-surface border border-border rounded">
+      <h2 class="font-playfair font-bold text-2xl text-text mb-2">¿Necesitas más ayuda?</h2>
+      <p class="font-inter text-text-muted text-sm mb-6">Escríbenos y te respondemos en menos de 24 horas.</p>
+      <a
+        href="mailto:hola@sapiens.pe"
+        class="inline-flex items-center gap-2 px-6 py-3 bg-[#0D0D0D] text-[#F8F8F5] font-inter font-medium text-sm rounded hover:bg-[#1A1A1A] transition-colors"
+        aria-label="Enviar correo a soporte"
+      >
+        Contactar soporte
+      </a>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

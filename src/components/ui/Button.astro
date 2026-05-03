@@ -1,0 +1,47 @@
+---
+interface Props {
+  variant?: 'primary' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  class?: string;
+  'aria-label'?: string;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  disabled = false,
+  class: className = '',
+  'aria-label': ariaLabel,
+} = Astro.props;
+
+const base = 'inline-flex items-center justify-center font-inter font-medium tracking-wide transition-colors duration-150 rounded cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
+
+const variants = {
+  primary: 'bg-[#0D0D0D] text-[#F8F8F5] hover:bg-[#1A1A1A] border border-[#0D0D0D] dark:bg-accent dark:text-[#0D0D0D] dark:border-accent dark:hover:opacity-90',
+  outline: 'bg-transparent text-[#0D0D0D] border border-[#0D0D0D] hover:bg-[#0D0D0D] hover:text-[#F8F8F5] dark:text-accent dark:border-accent dark:hover:bg-accent dark:hover:text-[#0D0D0D]',
+  ghost: 'bg-transparent text-text-muted border border-transparent hover:text-[#0D0D0D] hover:border-border dark:hover:text-[#F0F0EB]',
+};
+
+const sizes = {
+  sm: 'px-4 py-2 text-sm',
+  md: 'px-6 py-3 text-sm',
+  lg: 'px-8 py-4 text-base',
+};
+
+const classes = `${base} ${variants[variant]} ${sizes[size]} ${className}`;
+---
+
+{href ? (
+  <a href={href} class={classes} aria-label={ariaLabel}>
+    <slot />
+  </a>
+) : (
+  <button type={type} class={classes} disabled={disabled} aria-label={ariaLabel}>
+    <slot />
+  </button>
+)}

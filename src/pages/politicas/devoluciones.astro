@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+---
+
+<BaseLayout title="Devoluciones — Sapiens">
+  <Header />
+  <main class="max-w-[800px] mx-auto px-6 py-10">
+    <nav class="flex items-center gap-2 text-xs font-inter text-text-muted mb-8" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-text transition-colors">Inicio</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-text" aria-current="page">Devoluciones</span>
+    </nav>
+    <h1 class="font-playfair font-bold text-4xl text-text mb-8">Política de devoluciones</h1>
+    <div class="font-inter text-text max-w-none space-y-6">
+      <section>
+        <h2 class="font-playfair font-bold text-2xl text-text mb-3">Plazo</h2>
+        <p class="text-text-muted leading-relaxed">Tienes <strong class="text-text">7 días calendario</strong> desde la fecha de entrega para solicitar una devolución.</p>
+      </section>
+      <section>
+        <h2 class="font-playfair font-bold text-2xl text-text mb-3">Condiciones</h2>
+        <ul class="list-none space-y-2">
+          <li class="flex items-start gap-3"><span class="w-2 h-2 bg-[#0D0D0D] rounded-full mt-1.5 flex-shrink-0" aria-hidden="true"></span><span class="text-text-muted">Producto en perfecto estado, sin uso</span></li>
+          <li class="flex items-start gap-3"><span class="w-2 h-2 bg-[#0D0D0D] rounded-full mt-1.5 flex-shrink-0" aria-hidden="true"></span><span class="text-text-muted">Con empaque original</span></li>
+          <li class="flex items-start gap-3"><span class="w-2 h-2 bg-[#0D0D0D] rounded-full mt-1.5 flex-shrink-0" aria-hidden="true"></span><span class="text-text-muted">Boleta o factura de compra</span></li>
+        </ul>
+      </section>
+      <section>
+        <h2 class="font-playfair font-bold text-2xl text-text mb-3">Proceso</h2>
+        <p class="text-text-muted leading-relaxed">Escribe a <a href="mailto:hola@sapiens.pe" class="text-text underline">hola@sapiens.pe</a> con el número de pedido y el motivo de la devolución. Te responderemos en 24 horas.</p>
+      </section>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

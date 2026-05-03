@@ -1,0 +1,136 @@
+---
+import AdminLayout from '../../components/layout/AdminLayout.astro';
+import { libros } from '../../lib/mocks/libros.js';
+import { revistas } from '../../lib/mocks/revistas.js';
+import { categorias } from '../../lib/mocks/categorias.js';
+
+const MIN_STOCK = 5;
+
+const allItems = [
+  ...libros.map(l => ({
+    tipo: 'Libro',
+    titulo: l.titulo,
+    codigo: l.isbn,
+    categoria: l.categoria?.nombre_categoria ?? '—',
+    stock: l.stock,
+    min: MIN_STOCK,
+    estado: l.stock === 0 ? 'sin-stock' : l.stock <= MIN_STOCK ? 'bajo' : 'ok',
+  })),
+  ...revistas.map(r => ({
+    tipo: 'Revista',
+    titulo: r.titulo,
+    codigo: r.issn,
+    categoria: r.categoria?.nombre_categoria ?? '—',
+    stock: r.stock,
+    min: MIN_STOCK,
+    estado: r.stock === 0 ? 'sin-stock' : r.stock <= MIN_STOCK ? 'bajo' : 'ok',
+  })),
+];
+
+const estadoStyle: Record<string, string> = {
+  ok: 'text-success',
+  bajo: 'text-warning',
+  'sin-stock': 'text-error',
+};
+const estadoLabel: Record<string, string> = {
+  ok: 'OK',
+  bajo: 'Bajo',
+  'sin-stock': 'Sin stock',
+};
+---
+
+<AdminLayout title="Inventario — Admin Sapiens">
+  <div class="p-8">
+    <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+      <h1 class="font-playfair font-bold text-3xl text-text">Inventario</h1>
+      <button
+        type="button"
+        onclick="exportCSV()"
+        class="flex items-center gap-2 px-5 py-2.5 border border-border text-text font-inter text-sm rounded hover:bg-bg transition-colors"
+        aria-label="Exportar inventario como CSV"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Exportar CSV
+      </button>
+    </div>
+
+    <!-- Summary cards -->
+    <div class="grid grid-cols-3 gap-4 mb-8">
+      {[
+        { label: 'Total productos', value: allItems.length, color: 'text-text' },
+        { label: 'Stock bajo', value: allItems.filter(i => i.estado === 'bajo').length, color: 'text-warning' },
+        { label: 'Sin stock', value: allItems.filter(i => i.estado === 'sin-stock').length, color: 'text-error' },
+      ].map(s => (
+        <div class="bg-surface border border-border rounded p-4 text-center">
+          <p class={`font-inter font-bold text-2xl ${s.color}`}>{s.value}</p>
+          <p class="font-inter text-xs text-text-muted mt-1">{s.label}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="bg-surface border border-border rounded overflow-x-auto">
+      <table class="w-full text-sm font-inter min-w-[600px]">
+        <thead>
+          <tr class="border-b border-border bg-bg">
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Tipo</th>
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Título</th>
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider hidden lg:table-cell">ISBN/ISSN</th>
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider hidden md:table-cell">Categoría</th>
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Stock</th>
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Estado</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border" id="inventory-table">
+          {allItems.map((item, i) => (
+            <tr class="hover:bg-bg transition-colors" data-index={i}>
+              <td class="px-4 py-3 text-text-muted">{item.tipo}</td>
+              <td class="px-4 py-3 text-text font-medium max-w-xs">
+                <span class="line-clamp-2">{item.titulo}</span>
+              </td>
+              <td class="px-4 py-3 text-text-muted font-mono text-xs hidden lg:table-cell">{item.codigo}</td>
+              <td class="px-4 py-3 text-text-muted hidden md:table-cell">{item.categoria}</td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-2">
+                  <button type="button" onclick={`adjustStock(${i}, -1)`} aria-label={`Reducir stock de ${item.titulo}`} class="w-7 h-7 flex items-center justify-center border border-border rounded hover:bg-bg transition-colors text-text font-inter">−</button>
+                  <span class="font-inter font-medium text-text w-8 text-center" id={`stock-${i}`}>{item.stock}</span>
+                  <button type="button" onclick={`adjustStock(${i}, 1)`} aria-label={`Aumentar stock de ${item.titulo}`} class="w-7 h-7 flex items-center justify-center border border-border rounded hover:bg-bg transition-colors text-text font-inter">+</button>
+                </div>
+              </td>
+              <td class={`px-4 py-3 font-medium ${estadoStyle[item.estado]}`}>{estadoLabel[item.estado]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+  const MIN = 5;
+  const stocks: number[] = Array.from(document.querySelectorAll('[id^="stock-"]')).map(el => parseInt((el as HTMLElement).innerText));
+
+  function adjustStock(idx: number, delta: number) {
+    stocks[idx] = Math.max(0, stocks[idx] + delta);
+    const el = document.getElementById(`stock-${idx}`);
+    if (el) el.innerText = String(stocks[idx]);
+  }
+
+  function exportCSV() {
+    const rows = [['Tipo', 'Título', 'Código', 'Categoría', 'Stock', 'Estado']];
+    document.querySelectorAll('#inventory-table tr').forEach((tr, i) => {
+      const cells = Array.from(tr.querySelectorAll('td')).map(td => td.innerText.replace(/\n/g, ' ').trim());
+      if (cells.length) rows.push(cells);
+    });
+    const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `inventario-sapiens-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  (window as any).adjustStock = adjustStock;
+  (window as any).exportCSV = exportCSV;
+</script>

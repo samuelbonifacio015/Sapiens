@@ -1,0 +1,39 @@
+---
+const benefits = [
+  {
+    icon: '📦',
+    title: 'Envío seguro',
+    desc: 'Lima y provincias',
+  },
+  {
+    icon: '🔄',
+    title: 'Catálogo actualizado',
+    desc: 'Stock en tiempo real',
+  },
+  {
+    icon: '📱',
+    title: 'Libros digitales',
+    desc: 'Acceso inmediato',
+  },
+  {
+    icon: '🔒',
+    title: 'Compra segura',
+    desc: 'Datos protegidos',
+  },
+];
+---
+
+<section class="bg-[#0D0D0D] py-14 lg:py-16">
+  <div class="max-w-[1280px] mx-auto px-6">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-0 lg:divide-x lg:divide-[#2A2A2A]">
+      {benefits.map(b => (
+        <div class="group flex flex-col items-center text-center px-6 py-2 relative">
+          <span class="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-0.5 bg-accent opacity-0 group-hover:opacity-100 transition-opacity duration-150" aria-hidden="true"></span>
+          <span class="text-3xl mb-3" aria-hidden="true">{b.icon}</span>
+          <h3 class="font-inter font-semibold text-[#F8F8F5] text-sm mb-1">{b.title}</h3>
+          <p class="font-inter text-[#8A8A8A] text-xs">{b.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

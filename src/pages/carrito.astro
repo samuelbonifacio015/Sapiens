@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import CartPage from '../components/cart/CartPage';
+
+---
+
+<BaseLayout title="Carrito — Sapiens">
+  <Header />
+  <main class="max-w-[1280px] mx-auto px-6 py-10">
+    <CartPage client:load />
+  </main>
+  <Footer />
+</BaseLayout>

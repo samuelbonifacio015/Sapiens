@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import { autores } from '../../lib/mocks/autores.js';
+import { libros } from '../../lib/mocks/libros.js';
+---
+
+<BaseLayout title="Autores — Sapiens">
+  <Header />
+  <main class="max-w-[1280px] mx-auto px-6 py-10">
+    <h1 class="font-playfair font-bold text-4xl text-text mb-8">Autores</h1>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {autores.map(autor => {
+        const numLibros = libros.filter(l => l.id_autor === autor.id_autor).length;
+        return (
+          <a
+            href={`/autores/${autor.id_autor}`}
+            class="flex flex-col gap-3 p-6 bg-surface border border-border rounded hover:border-[#0D0D0D] transition-colors group"
+            aria-label={`Ver libros de ${autor.nombre_autor}`}
+          >
+            <div class="w-12 h-12 rounded-full bg-[#0D0D0D] flex items-center justify-center flex-shrink-0">
+              <span class="font-playfair font-bold text-lg text-[#F8F8F5]">
+                {autor.nombre_autor.charAt(0)}
+              </span>
+            </div>
+            <div>
+              <h2 class="font-playfair font-medium text-lg text-text group-hover:underline">{autor.nombre_autor}</h2>
+              <p class="font-inter text-xs text-text-muted mt-1">{numLibros} {numLibros === 1 ? 'libro' : 'libros'}</p>
+              {autor.bio && (
+                <p class="font-inter text-sm text-text-muted mt-2 line-clamp-2">{autor.bio}</p>
+              )}
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

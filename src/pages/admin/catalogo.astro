@@ -1,0 +1,27 @@
+---
+import AdminLayout from '../../components/layout/AdminLayout.astro';
+import { libros } from '../../lib/mocks/libros.js';
+import { revistas } from '../../lib/mocks/revistas.js';
+---
+
+<AdminLayout title="Catálogo — Admin Sapiens">
+  <div class="p-8">
+    <h1 class="font-playfair font-bold text-3xl text-text mb-8">Catálogo</h1>
+    <div class="grid sm:grid-cols-3 gap-5 mb-8">
+      {[
+        { label: 'Total libros', value: libros.length, href: '/admin/libros' },
+        { label: 'Total revistas', value: revistas.length, href: '/admin/revistas' },
+        { label: 'Total productos', value: libros.length + revistas.length, href: '#' },
+      ].map(s => (
+        <a href={s.href} class="bg-surface border border-border rounded p-5 hover:border-[#0D0D0D] transition-colors group">
+          <p class="font-inter font-bold text-3xl text-text">{s.value}</p>
+          <p class="font-inter text-sm text-text-muted mt-1 group-hover:text-text transition-colors">{s.label}</p>
+        </a>
+      ))}
+    </div>
+    <div class="flex gap-4">
+      <a href="/admin/libros" class="px-5 py-2.5 bg-[#0D0D0D] text-[#F8F8F5] font-inter text-sm rounded hover:bg-[#1A1A1A] transition-colors">Gestionar libros</a>
+      <a href="/admin/revistas" class="px-5 py-2.5 border border-[#0D0D0D] text-[#0D0D0D] font-inter text-sm rounded hover:bg-[#0D0D0D] hover:text-[#F8F8F5] transition-colors">Gestionar revistas</a>
+    </div>
+  </div>
+</AdminLayout>

@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import ProductCard from '../../components/ui/ProductCard.astro';
+import FilterSidebar from '../../components/sections/FilterSidebar';
+import { libros } from '../../lib/mocks/libros.js';
+import { revistas } from '../../lib/mocks/revistas.js';
+import { categorias } from '../../lib/mocks/categorias.js';
+
+const allItems = [
+  ...libros.map(l => ({ producto: l, tipo: 'libro' as const })),
+  ...revistas.map(r => ({ producto: r, tipo: 'revista' as const })),
+];
+
+const categoriasWithCount = categorias.map(cat => ({
+  ...cat,
+  count: allItems.filter(i => i.producto.id_categoria === cat.id_categoria).length,
+}));
+---
+
+<BaseLayout title="Catálogo — Sapiens">
+  <Header />
+  <main class="max-w-[1280px] mx-auto px-6 py-10">
+    <div class="mb-6">
+      <h1 class="font-playfair font-bold text-4xl text-text">Catálogo</h1>
+      <p class="font-inter text-text-muted text-sm mt-2">Libros y revistas disponibles</p>
+    </div>
+
+    <div class="flex gap-10 items-start">
+      <!-- Sidebar -->
+      <FilterSidebar categorias={categoriasWithCount} client:load />
+
+      <!-- Grid area -->
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+          <p class="font-inter text-text-muted text-sm">
+            Mostrando <strong class="text-text">{allItems.length}</strong> resultados
+          </p>
+        </div>
+
+        {allItems.length === 0 ? (
+          <div class="flex flex-col items-center justify-center py-20 text-center">
+            <span class="text-5xl mb-4" aria-hidden="true">📚</span>
+            <p class="font-inter text-text-muted text-base">No encontramos productos con esos filtros.</p>
+          </div>
+        ) : (
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+            {allItems.map(({ producto, tipo }) => (
+              <ProductCard producto={producto} tipo={tipo} />
+            ))}
+          </div>
+        )}
+
+        <!-- Pagination -->
+        {allItems.length > 0 && (
+          <nav class="flex items-center justify-center gap-2 mt-12" aria-label="Paginación">
+            <button type="button" disabled class="px-4 py-2 font-inter text-sm text-text-muted border border-border rounded disabled:opacity-40" aria-label="Página anterior">
+              Anterior
+            </button>
+            <button type="button" class="px-4 py-2 font-inter text-sm bg-[#0D0D0D] text-[#F8F8F5] rounded" aria-current="page" aria-label="Página 1">
+              1
+            </button>
+            <button type="button" disabled class="px-4 py-2 font-inter text-sm text-text-muted border border-border rounded disabled:opacity-40" aria-label="Página siguiente">
+              Siguiente
+            </button>
+          </nav>
+        )}
+      </div>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

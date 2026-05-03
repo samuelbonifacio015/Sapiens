@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+---
+
+<BaseLayout title="Pedido confirmado — Sapiens">
+  <Header />
+  <main class="max-w-[600px] mx-auto px-6 py-16 text-center">
+    <div class="w-20 h-20 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-6" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-success">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+
+    <h1 class="font-playfair font-bold text-4xl text-text mb-3">¡Pedido confirmado!</h1>
+    <p class="font-inter text-text-muted text-base mb-8">
+      Gracias por tu compra. Te enviaremos un correo con los detalles.
+    </p>
+
+    <div class="inline-flex items-center gap-3 px-6 py-4 bg-[#0D0D0D] rounded mb-10">
+      <span class="font-inter text-sm text-[#F8F8F5]">Número de pedido:</span>
+      <span id="order-number" class="font-playfair font-bold text-xl text-accent">SAP-00000</span>
+    </div>
+
+    <div class="bg-surface border border-border rounded p-6 text-left mb-10">
+      <h2 class="font-playfair font-bold text-lg text-text mb-3">Instrucciones de pago</h2>
+      <div class="flex flex-col gap-3">
+        <div>
+          <p class="font-inter font-medium text-text text-sm">Transferencia bancaria</p>
+          <p class="font-inter text-text-muted text-xs mt-1">BCP: 193-12345678-0-01 a nombre de Librería Sapiens SAC</p>
+        </div>
+        <div class="border-t border-border pt-3">
+          <p class="font-inter font-medium text-text text-sm">Pago contraentrega</p>
+          <p class="font-inter text-text-muted text-xs mt-1">Solo disponible en Lima Metropolitana.</p>
+        </div>
+      </div>
+      <p class="font-inter text-xs text-text-muted mt-4">
+        Envía tu comprobante a <a href="mailto:pagos@sapiens.pe" class="text-text underline">pagos@sapiens.pe</a> con tu número de pedido.
+      </p>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="/mi-cuenta/pedidos" class="px-8 py-3 bg-[#0D0D0D] text-[#F8F8F5] font-inter font-medium text-sm rounded hover:bg-[#1A1A1A] transition-colors" aria-label="Ver mis pedidos">
+        Ver mis pedidos
+      </a>
+      <a href="/catalogo" class="px-8 py-3 border border-[#0D0D0D] text-[#0D0D0D] font-inter font-medium text-sm rounded hover:bg-[#0D0D0D] hover:text-[#F8F8F5] transition-colors" aria-label="Seguir comprando">
+        Seguir comprando
+      </a>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const pedido = params.get('pedido') ?? 'SAP-00000';
+  const el = document.getElementById('order-number');
+  if (el) el.textContent = pedido;
+</script>

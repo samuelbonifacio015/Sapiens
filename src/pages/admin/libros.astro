@@ -1,0 +1,42 @@
+---
+import AdminLayout from '../../components/layout/AdminLayout.astro';
+import { libros } from '../../lib/mocks/libros.js';
+---
+
+<AdminLayout title="Libros — Admin Sapiens">
+  <div class="p-8">
+    <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+      <h1 class="font-playfair font-bold text-3xl text-text">Libros</h1>
+      <button type="button" class="px-5 py-2.5 bg-[#0D0D0D] text-[#F8F8F5] font-inter text-sm rounded hover:bg-[#1A1A1A] transition-colors" aria-label="Agregar nuevo libro">
+        + Agregar libro
+      </button>
+    </div>
+    <div class="bg-surface border border-border rounded overflow-x-auto">
+      <table class="w-full text-sm font-inter min-w-[500px]">
+        <thead>
+          <tr class="border-b border-border bg-bg">
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Título</th>
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider hidden md:table-cell">Autor</th>
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Precio</th>
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Stock</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border">
+          {libros.map(libro => (
+            <tr class="hover:bg-bg transition-colors">
+              <td class="px-4 py-3">
+                <a href={`/libros/${libro.id_libro}`} class="font-inter font-medium text-text hover:underline line-clamp-1">{libro.titulo}</a>
+                <p class="font-inter text-xs text-text-muted mt-0.5">{libro.isbn}</p>
+              </td>
+              <td class="px-4 py-3 text-text-muted hidden md:table-cell">{libro.autor?.nombre_autor}</td>
+              <td class="px-4 py-3 text-text font-medium">S/ {libro.precio.toFixed(2)}</td>
+              <td class={`px-4 py-3 font-medium ${libro.stock === 0 ? 'text-error' : libro.stock <= 4 ? 'text-warning' : 'text-success'}`}>
+                {libro.stock}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</AdminLayout>
