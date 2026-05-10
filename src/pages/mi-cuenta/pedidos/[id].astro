@@ -2,25 +2,26 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Header from '../../../components/layout/Header.astro';
 import Footer from '../../../components/layout/Footer.astro';
-import { pedidos } from '../../../lib/mocks/pedidos.js';
-import { libros } from '../../../lib/mocks/libros.js';
-import { revistas } from '../../../lib/mocks/revistas.js';
+import { findPedidoById, findDetallesByPedido } from '../../../lib/repos/pedidos.js';
 
-export function getStaticPaths() {
-  return pedidos.map(p => ({
-    params: { id: String(p.id_pedido) },
-    props: { pedido: p },
-  }));
+export const prerender = false;
+
+if (!Astro.locals.user) return Astro.redirect('/iniciar-sesion');
+
+const id = Number(Astro.params.id);
+const pedido = await findPedidoById(id);
+if (!pedido) return Astro.redirect('/404');
+if (Astro.locals.user.rol !== 'ADMIN' && pedido.id_cliente !== Astro.locals.user.id) {
+  return new Response('Forbidden', { status: 403 });
 }
-
-const { pedido } = Astro.props;
+const detalles = await findDetallesByPedido(id);
 
 const estadoColor: Record<string, string> = {
-  pendiente: 'bg-warning text-[#0D0D0D]',
-  confirmado: 'bg-[#0D0D0D] text-[#F8F8F5]',
-  enviado: 'bg-[#0D0D0D] text-[#F8F8F5]',
-  entregado: 'bg-success text-white',
-  cancelado: 'bg-error text-white',
+  Pendiente: 'bg-warning text-[#0D0D0D]',
+  Confirmado: 'bg-[#0D0D0D] text-[#F8F8F5]',
+  'En camino': 'bg-[#0D0D0D] text-[#F8F8F5]',
+  Entregado: 'bg-success text-white',
+  Cancelado: 'bg-error text-white',
 };
 ---
 
@@ -38,36 +39,29 @@ const estadoColor: Record<string, string> = {
     <div class="flex items-start justify-between gap-4 mb-8">
       <div>
         <h1 class="font-playfair font-bold text-3xl text-text">Pedido #{pedido.id_pedido}</h1>
-        <p class="font-inter text-text-muted text-sm mt-1">{pedido.fecha}</p>
+        <p class="font-inter text-text-muted text-sm mt-1">{new Date(pedido.fecha_pedido).toLocaleString()}</p>
       </div>
-      <span class={`px-3 py-1.5 text-xs font-inter font-semibold rounded capitalize ${estadoColor[pedido.estado]}`}>
+      <span class={`px-3 py-1.5 text-xs font-inter font-semibold rounded ${estadoColor[pedido.estado] ?? 'bg-surface text-text'}`}>
         {pedido.estado}
       </span>
     </div>
 
-    <!-- Items -->
     <div class="bg-surface border border-border rounded overflow-hidden mb-6">
       <div class="px-5 py-4 border-b border-border">
         <h2 class="font-inter font-semibold text-text text-sm">Productos</h2>
       </div>
       <div class="divide-y divide-border">
-        {(pedido.detalles ?? []).map(detalle => {
-          const libro = detalle.id_libro ? libros.find(l => l.id_libro === detalle.id_libro) : null;
-          const revista = detalle.id_revista ? revistas.find(r => r.id_revista === detalle.id_revista) : null;
-          const producto = libro ?? revista;
-          if (!producto) return null;
-          return (
-            <div class="flex items-center justify-between px-5 py-4 gap-4">
-              <div>
-                <p class="font-inter text-sm text-text">{producto.titulo}</p>
-                <p class="font-inter text-xs text-text-muted mt-0.5">x{detalle.cantidad}</p>
-              </div>
-              <span class="font-inter font-medium text-text text-sm whitespace-nowrap">
-                S/ {(detalle.precio_unitario * detalle.cantidad).toFixed(2)}
-              </span>
+        {detalles.map(detalle => (
+          <div class="flex items-center justify-between px-5 py-4 gap-4">
+            <div>
+              <p class="font-inter text-sm text-text">{detalle.producto?.titulo ?? `${detalle.tipo_producto} #${detalle.id_producto}`}</p>
+              <p class="font-inter text-xs text-text-muted mt-0.5">x{detalle.cantidad}</p>
             </div>
-          );
-        })}
+            <span class="font-inter font-medium text-text text-sm whitespace-nowrap">
+              S/ {(detalle.precio_unitario * detalle.cantidad).toFixed(2)}
+            </span>
+          </div>
+        ))}
       </div>
       <div class="px-5 py-4 border-t border-border flex items-center justify-between">
         <span class="font-inter font-semibold text-text">Total</span>
@@ -78,9 +72,8 @@ const estadoColor: Record<string, string> = {
     {pedido.cliente && (
       <div class="bg-surface border border-border rounded p-5">
         <h2 class="font-inter font-semibold text-text text-sm mb-3">Datos de contacto</h2>
-        <p class="font-inter text-sm text-text-muted">{pedido.cliente.nombre}</p>
-        <p class="font-inter text-sm text-text-muted">{pedido.cliente.email}</p>
-        {pedido.cliente.telefono && <p class="font-inter text-sm text-text-muted">{pedido.cliente.telefono}</p>}
+        <p class="font-inter text-sm text-text-muted">{pedido.cliente.nombre_cliente}</p>
+        <p class="font-inter text-sm text-text-muted">{pedido.cliente.correo}</p>
       </div>
     )}
   </main>

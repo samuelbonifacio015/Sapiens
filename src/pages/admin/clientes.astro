@@ -1,11 +1,18 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
-import { pedidos } from '../../lib/mocks/pedidos.js';
+import { findAllClientes } from '../../lib/repos/clientes.js';
+import { db } from '../../lib/db.js';
 
-const clientes = pedidos
-  .map(p => p.cliente)
-  .filter(Boolean)
-  .filter((c, i, arr) => arr.findIndex(x => x?.id_cliente === c?.id_cliente) === i);
+export const prerender = false;
+
+if (Astro.locals.user?.rol !== 'ADMIN') return Astro.redirect('/iniciar-sesion');
+
+const clientes = await findAllClientes();
+const [countRows]: any = await db.query(
+  `SELECT ID_Cliente, COUNT(*) AS total FROM Pedidos GROUP BY ID_Cliente`
+);
+const counts: Record<number, number> = {};
+for (const r of countRows) counts[r.ID_Cliente] = Number(r.total);
 ---
 
 <AdminLayout title="Clientes — Admin Sapiens">
@@ -16,20 +23,20 @@ const clientes = pedidos
         <thead>
           <tr class="border-b border-border bg-bg">
             <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Nombre</th>
-            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Email</th>
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Correo</th>
             <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider hidden md:table-cell">Teléfono</th>
+            <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Rol</th>
             <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Pedidos</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-border">
-          {clientes.map(cliente => cliente && (
+          {clientes.map(cliente => (
             <tr class="hover:bg-bg transition-colors">
-              <td class="px-4 py-3 font-inter font-medium text-text">{cliente.nombre}</td>
-              <td class="px-4 py-3 text-text-muted">{cliente.email}</td>
+              <td class="px-4 py-3 font-inter font-medium text-text">{cliente.nombre_cliente}</td>
+              <td class="px-4 py-3 text-text-muted">{cliente.correo}</td>
               <td class="px-4 py-3 text-text-muted hidden md:table-cell">{cliente.telefono ?? '—'}</td>
-              <td class="px-4 py-3 text-text-muted">
-                {pedidos.filter(p => p.id_cliente === cliente.id_cliente).length}
-              </td>
+              <td class="px-4 py-3 text-text-muted">{cliente.rol ?? 'USER'}</td>
+              <td class="px-4 py-3 text-text-muted">{counts[cliente.id_cliente] ?? 0}</td>
             </tr>
           ))}
         </tbody>

@@ -2,8 +2,10 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
-import { autores } from '../../lib/mocks/autores.js';
-import { libros } from '../../lib/mocks/libros.js';
+import { findAllAutores } from '../../lib/repos/autores.js';
+import { findAllLibros } from '../../lib/repos/libros.js';
+
+const [autores, libros] = await Promise.all([findAllAutores(), findAllLibros({ size: 500 })]);
 ---
 
 <BaseLayout title="Autores — Sapiens">
@@ -27,8 +29,8 @@ import { libros } from '../../lib/mocks/libros.js';
             <div>
               <h2 class="font-playfair font-medium text-lg text-text group-hover:underline">{autor.nombre_autor}</h2>
               <p class="font-inter text-xs text-text-muted mt-1">{numLibros} {numLibros === 1 ? 'libro' : 'libros'}</p>
-              {autor.bio && (
-                <p class="font-inter text-sm text-text-muted mt-2 line-clamp-2">{autor.bio}</p>
+              {autor.nacionalidad && (
+                <p class="font-inter text-sm text-text-muted mt-2 line-clamp-2">{autor.nacionalidad}</p>
               )}
             </div>
           </a>

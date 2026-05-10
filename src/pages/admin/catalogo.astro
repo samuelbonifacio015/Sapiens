@@ -1,7 +1,16 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
-import { libros } from '../../lib/mocks/libros.js';
-import { revistas } from '../../lib/mocks/revistas.js';
+import { findAllLibros } from '../../lib/repos/libros.js';
+import { findAllRevistas } from '../../lib/repos/revistas.js';
+
+export const prerender = false;
+
+if (Astro.locals.user?.rol !== 'ADMIN') return Astro.redirect('/iniciar-sesion');
+
+const [libros, revistas] = await Promise.all([
+  findAllLibros({ size: 1000 }),
+  findAllRevistas({ size: 1000 }),
+]);
 ---
 
 <AdminLayout title="Catálogo — Admin Sapiens">

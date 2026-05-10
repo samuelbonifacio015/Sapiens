@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "Bash(npm i *)",
-      "Bash(grep -q \"^.env$\" .gitignore)"
+      "Bash(grep -q \"^.env$\" .gitignore)",
+      "Bash(claude-mem status *)",
+      "Bash(claude-mem --version)",
+      "Bash(npx claude-mem *)",
+      "Bash(env)",
+      "Bash(python -c ' *)",
+      "Bash(python *)"
     ]
   }
 }

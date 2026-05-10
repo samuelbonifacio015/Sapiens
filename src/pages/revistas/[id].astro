@@ -5,19 +5,17 @@ import Footer from '../../components/layout/Footer.astro';
 import StockIndicator from '../../components/ui/StockIndicator.astro';
 import Badge from '../../components/ui/Badge.astro';
 import ProductCard from '../../components/ui/ProductCard.astro';
-import { revistas } from '../../lib/mocks/revistas.js';
+import { findRevistaById, findAllRevistas } from '../../lib/repos/revistas.js';
 
-export function getStaticPaths() {
-  return revistas.map(revista => ({
-    params: { id: String(revista.id_revista) },
-    props: { revista },
-  }));
-}
+const id = Number(Astro.params.id);
+if (!Number.isFinite(id)) return Astro.redirect('/catalogo/revistas');
 
-const { revista } = Astro.props;
+const revista = await findRevistaById(id);
+if (!revista) return new Response('Revista no encontrada', { status: 404 });
 
-const related = revistas
-  .filter(r => r.id_categoria === revista.id_categoria && r.id_revista !== revista.id_revista)
+const sameCat = await findAllRevistas({ categoria: revista.id_categoria, size: 8 });
+const related = sameCat
+  .filter(r => r.id_revista !== revista.id_revista)
   .slice(0, 4)
   .map(r => ({ producto: r, tipo: 'revista' as const }));
 
@@ -55,7 +53,9 @@ const placeholderBg = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0'][revista.id_re
       <div class="md:col-span-3 flex flex-col gap-5">
         <div>
           <h1 class="font-playfair font-bold text-3xl lg:text-4xl text-text leading-tight">{revista.titulo}</h1>
-          <p class="mt-2 font-inter text-text-muted text-sm uppercase tracking-wide">{revista.frecuencia}</p>
+          {revista.frecuencia && (
+            <p class="mt-2 font-inter text-text-muted text-sm uppercase tracking-wide">{revista.frecuencia}</p>
+          )}
         </div>
 
         <div class="flex items-center gap-4">

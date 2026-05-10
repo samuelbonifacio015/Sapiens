@@ -1,5 +1,7 @@
 ---
-import { categorias } from '../../lib/mocks/categorias.js';
+import { findAllCategorias } from '../../lib/repos/categorias.js';
+
+const categorias = await findAllCategorias();
 
 const categoryIcons: Record<string, string> = {
   'Literatura Peruana': '🇵🇪',

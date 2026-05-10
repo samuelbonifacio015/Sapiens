@@ -5,19 +5,17 @@ import Footer from '../../components/layout/Footer.astro';
 import StockIndicator from '../../components/ui/StockIndicator.astro';
 import Badge from '../../components/ui/Badge.astro';
 import ProductCard from '../../components/ui/ProductCard.astro';
-import { libros } from '../../lib/mocks/libros.js';
+import { findLibroById, findAllLibros } from '../../lib/repos/libros.js';
 
-export function getStaticPaths() {
-  return libros.map(libro => ({
-    params: { id: String(libro.id_libro) },
-    props: { libro },
-  }));
-}
+const id = Number(Astro.params.id);
+if (!Number.isFinite(id)) return Astro.redirect('/catalogo/libros');
 
-const { libro } = Astro.props;
+const libro = await findLibroById(id);
+if (!libro) return new Response('Libro no encontrado', { status: 404 });
 
-const related = libros
-  .filter(l => l.id_autor === libro.id_autor && l.id_libro !== libro.id_libro)
+const sameAutor = await findAllLibros({ autor: libro.id_autor, size: 8 });
+const related = sameAutor
+  .filter(l => l.id_libro !== libro.id_libro)
   .slice(0, 4)
   .map(l => ({ producto: l, tipo: 'libro' as const }));
 
@@ -27,7 +25,6 @@ const placeholderBg = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0'][libro.id_libr
 <BaseLayout title={`${libro.titulo} — Sapiens`}>
   <Header />
   <main class="max-w-[1280px] mx-auto px-6 py-10">
-    <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-xs font-inter text-text-muted mb-8 flex-wrap" aria-label="Breadcrumb">
       <a href="/" class="hover:text-text transition-colors">Inicio</a>
       <span aria-hidden="true">/</span>
@@ -36,9 +33,7 @@ const placeholderBg = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0'][libro.id_libr
       <span class="text-text line-clamp-1" aria-current="page">{libro.titulo}</span>
     </nav>
 
-    <!-- Product detail -->
     <div class="grid md:grid-cols-5 gap-10 lg:gap-16">
-      <!-- Left: Cover -->
       <div class="md:col-span-2">
         <div class="relative">
           <Badge variant="default" class="absolute top-3 left-3 z-10">
@@ -55,7 +50,6 @@ const placeholderBg = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0'][libro.id_libr
         </div>
       </div>
 
-      <!-- Right: Info -->
       <div class="md:col-span-3 flex flex-col gap-5">
         <div>
           <h1 class="font-playfair font-bold text-3xl lg:text-4xl text-text leading-tight">{libro.titulo}</h1>
@@ -74,7 +68,6 @@ const placeholderBg = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0'][libro.id_libr
           <StockIndicator stock={libro.stock} showCount={true} />
         </div>
 
-        <!-- Metadata table -->
         <table class="text-sm font-inter border-collapse">
           <tbody>
             {[
@@ -91,7 +84,6 @@ const placeholderBg = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0'][libro.id_libr
           </tbody>
         </table>
 
-        <!-- Quantity + actions -->
         <div class="flex flex-col gap-3 pt-2">
           <div class="flex items-center gap-4">
             <span class="font-inter text-sm text-text-muted">Cantidad</span>
@@ -123,7 +115,6 @@ const placeholderBg = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0'][libro.id_libr
       </div>
     </div>
 
-    <!-- Related books -->
     {related.length > 0 && (
       <section class="mt-16 pt-12 border-t border-border">
         <h2 class="font-playfair font-bold text-2xl text-text mb-8">

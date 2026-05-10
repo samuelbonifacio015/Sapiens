@@ -1,6 +1,8 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
-import { libros } from '../../lib/mocks/libros.js';
+import { findAllLibros } from '../../lib/repos/libros.js';
+
+const libros = await findAllLibros({ size: 500 });
 ---
 
 <AdminLayout title="Libros — Admin Sapiens">

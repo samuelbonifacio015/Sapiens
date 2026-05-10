@@ -1,11 +1,21 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
-import { pedidos } from '../../lib/mocks/pedidos.js';
-import { libros } from '../../lib/mocks/libros.js';
+import { findAllPedidos } from '../../lib/repos/pedidos.js';
+import { findAllLibros } from '../../lib/repos/libros.js';
 
-const ingresosTotales = pedidos.filter(p => p.estado !== 'cancelado').reduce((s, p) => s + p.total, 0);
-const ticketPromedio = ingresosTotales / Math.max(pedidos.filter(p => p.estado !== 'cancelado').length, 1);
-const topLibros = libros.slice(0, 3);
+export const prerender = false;
+
+if (Astro.locals.user?.rol !== 'ADMIN') return Astro.redirect('/iniciar-sesion');
+
+const [pedidos, libros] = await Promise.all([
+  findAllPedidos(),
+  findAllLibros({ size: 1000 }),
+]);
+
+const activos = pedidos.filter(p => p.estado !== 'Cancelado');
+const ingresosTotales = activos.reduce((s, p) => s + p.total, 0);
+const ticketPromedio = ingresosTotales / Math.max(activos.length, 1);
+const topLibros = [...libros].sort((a, b) => b.stock - a.stock).slice(0, 5);
 ---
 
 <AdminLayout title="Reportes — Admin Sapiens">
@@ -16,9 +26,9 @@ const topLibros = libros.slice(0, 3);
         { label: 'Ingresos totales', value: `S/ ${ingresosTotales.toFixed(2)}` },
         { label: 'Ticket promedio', value: `S/ ${ticketPromedio.toFixed(2)}` },
         { label: 'Pedidos totales', value: pedidos.length },
-        { label: 'Entregados', value: pedidos.filter(p => p.estado === 'entregado').length },
-        { label: 'Cancelados', value: pedidos.filter(p => p.estado === 'cancelado').length },
-        { label: 'Pendientes', value: pedidos.filter(p => p.estado === 'pendiente').length },
+        { label: 'Entregados', value: pedidos.filter(p => p.estado === 'Entregado').length },
+        { label: 'Cancelados', value: pedidos.filter(p => p.estado === 'Cancelado').length },
+        { label: 'Pendientes', value: pedidos.filter(p => p.estado === 'Pendiente').length },
       ].map(s => (
         <div class="bg-surface border border-border rounded p-5">
           <p class="font-inter font-bold text-2xl text-text">{s.value}</p>
@@ -27,7 +37,7 @@ const topLibros = libros.slice(0, 3);
       ))}
     </div>
     <section>
-      <h2 class="font-playfair font-bold text-xl text-text mb-4">Libros destacados</h2>
+      <h2 class="font-playfair font-bold text-xl text-text mb-4">Libros con más stock</h2>
       <div class="bg-surface border border-border rounded overflow-hidden">
         <table class="w-full text-sm font-inter">
           <thead>

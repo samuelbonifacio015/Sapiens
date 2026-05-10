@@ -4,9 +4,17 @@ import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
 import ProductCard from '../../components/ui/ProductCard.astro';
 import FilterSidebar from '../../components/sections/FilterSidebar';
-import { libros } from '../../lib/mocks/libros.js';
-import { revistas } from '../../lib/mocks/revistas.js';
-import { categorias } from '../../lib/mocks/categorias.js';
+import { findAllLibros } from '../../lib/repos/libros.js';
+import { findAllRevistas } from '../../lib/repos/revistas.js';
+import { findAllCategorias } from '../../lib/repos/categorias.js';
+
+export const prerender = false;
+
+const [libros, revistas, categorias] = await Promise.all([
+  findAllLibros({ size: 1000 }),
+  findAllRevistas({ size: 1000 }),
+  findAllCategorias(),
+]);
 
 const allItems = [
   ...libros.map(l => ({ producto: l, tipo: 'libro' as const })),

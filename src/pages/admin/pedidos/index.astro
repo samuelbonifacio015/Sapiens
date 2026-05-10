@@ -1,13 +1,19 @@
 ---
 import AdminLayout from '../../../components/layout/AdminLayout.astro';
-import { pedidos } from '../../../lib/mocks/pedidos.js';
+import { findAllPedidos } from '../../../lib/repos/pedidos.js';
+
+export const prerender = false;
+
+if (Astro.locals.user?.rol !== 'ADMIN') return Astro.redirect('/iniciar-sesion');
+
+const pedidos = await findAllPedidos();
 
 const estadoColor: Record<string, string> = {
-  pendiente: 'bg-warning/10 text-warning',
-  confirmado: 'bg-[#0D0D0D]/10 text-[#0D0D0D]',
-  enviado: 'bg-[#0D0D0D]/10 text-[#0D0D0D]',
-  entregado: 'bg-success/10 text-success',
-  cancelado: 'bg-error/10 text-error',
+  Pendiente: 'bg-warning/10 text-warning',
+  Confirmado: 'bg-[#0D0D0D]/10 text-[#0D0D0D]',
+  'En camino': 'bg-[#0D0D0D]/10 text-[#0D0D0D]',
+  Entregado: 'bg-success/10 text-success',
+  Cancelado: 'bg-error/10 text-error',
 };
 ---
 
@@ -31,12 +37,12 @@ const estadoColor: Record<string, string> = {
               <td class="px-4 py-3">
                 <a href={`/admin/pedidos/${pedido.id_pedido}`} class="text-text font-medium hover:underline">#{pedido.id_pedido}</a>
               </td>
-              <td class="px-4 py-3 text-text-muted hidden md:table-cell">{pedido.cliente?.nombre ?? '—'}</td>
+              <td class="px-4 py-3 text-text-muted hidden md:table-cell">{pedido.cliente?.nombre_cliente ?? '—'}</td>
               <td class="px-4 py-3 text-text font-medium">S/ {pedido.total.toFixed(2)}</td>
               <td class="px-4 py-3">
-                <span class={`px-2.5 py-1 text-xs font-medium rounded capitalize ${estadoColor[pedido.estado]}`}>{pedido.estado}</span>
+                <span class={`px-2.5 py-1 text-xs font-medium rounded ${estadoColor[pedido.estado] ?? 'bg-surface text-text'}`}>{pedido.estado}</span>
               </td>
-              <td class="px-4 py-3 text-text-muted hidden sm:table-cell">{pedido.fecha}</td>
+              <td class="px-4 py-3 text-text-muted hidden sm:table-cell">{new Date(pedido.fecha_pedido).toLocaleString()}</td>
             </tr>
           ))}
         </tbody>

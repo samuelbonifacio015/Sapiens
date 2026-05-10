@@ -25,6 +25,8 @@ const STEPS = ['Datos', 'Entrega', 'Confirmar'];
 export default function CheckoutWizard() {
   const { items, total, clearCart } = useCart();
   const [step, setStep] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [cliente, setCliente] = useState<ClienteData>({
     nombre: '', email: '', telefono: '', dni: '', tipoEntrega: 'delivery',
   });
@@ -32,9 +34,39 @@ export default function CheckoutWizard() {
     departamento: '', provincia: '', distrito: '', direccion: '', referencia: '', destinatario: '',
   });
 
-  const handleConfirm = () => {
-    clearCart();
-    window.location.href = '/pedido-confirmado?pedido=SAP-' + Math.floor(Math.random() * 90000 + 10000);
+  const handleConfirm = async () => {
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const payload = {
+        items: items.map(i => ({
+          tipo_producto: i.tipo === 'libro' ? 'Libro' : 'Revista',
+          id_producto: i.tipo === 'libro'
+            ? (i.producto as any).id_libro
+            : (i.producto as any).id_revista,
+          cantidad: i.cantidad,
+        })),
+      };
+      const res = await fetch('/api/pedidos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (res.status === 401) {
+        window.location.href = '/iniciar-sesion?next=/checkout';
+        return;
+      }
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j.error || 'No se pudo procesar el pedido');
+      }
+      const { id_pedido } = await res.json();
+      clearCart();
+      window.location.href = `/pedido-confirmado?pedido=${id_pedido}`;
+    } catch (e: any) {
+      setSubmitError(e.message ?? 'Error');
+      setSubmitting(false);
+    }
   };
 
   const fieldClass = 'w-full px-4 py-3 bg-surface border border-border text-text font-inter text-sm rounded placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-[#0D0D0D] transition-colors';
@@ -209,12 +241,16 @@ export default function CheckoutWizard() {
             <button
               type="button"
               onClick={handleConfirm}
-              className="px-8 py-4 bg-[#0D0D0D] text-[#F8F8F5] font-inter font-medium text-sm rounded hover:bg-[#1A1A1A] transition-colors"
+              disabled={submitting || items.length === 0}
+              className="px-8 py-4 bg-[#0D0D0D] text-[#F8F8F5] font-inter font-medium text-sm rounded hover:bg-[#1A1A1A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               aria-label="Confirmar y enviar pedido"
             >
-              Confirmar pedido
+              {submitting ? 'Procesando…' : 'Confirmar pedido'}
             </button>
           </div>
+          {submitError && (
+            <p className="font-inter text-sm text-red-600 text-center" role="alert">{submitError}</p>
+          )}
         </div>
       )}
     </div>
