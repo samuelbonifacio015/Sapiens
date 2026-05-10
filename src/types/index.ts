@@ -1,69 +1,75 @@
 export interface Categoria {
   id_categoria: number;
   nombre_categoria: string;
+  descripcion?: string;
 }
 
 export interface Autor {
   id_autor: number;
   nombre_autor: string;
-  bio?: string;
+  nacionalidad?: string;
 }
 
 export interface Libro {
   id_libro: number;
-  titulo: string;
   isbn: string;
-  editorial: string;
-  anio_publicacion: number;
+  titulo: string;
+  editorial?: string;
+  anio_publicacion?: number;
   precio: number;
   stock: number;
-  id_autor: number;
   id_categoria: number;
+  id_autor: number;
   autor?: Autor;
   categoria?: Categoria;
 }
 
 export interface Revista {
   id_revista: number;
-  titulo: string;
   issn: string;
-  editorial: string;
-  frecuencia: 'Mensual' | 'Quincenal' | 'Semanal' | 'Bimestral';
+  titulo: string;
+  editorial?: string;
+  frecuencia?: string;
   precio: number;
   stock: number;
   id_categoria: number;
   categoria?: Categoria;
 }
 
+export type Rol = 'USER' | 'ADMIN';
+
 export interface Cliente {
   id_cliente: number;
-  nombre: string;
-  email: string;
+  nombre_cliente: string;
+  correo: string;
   telefono?: string;
   direccion?: string;
+  fecha_registro?: string;
+  rol?: Rol;
 }
 
-export type EstadoPedido = 'pendiente' | 'confirmado' | 'enviado' | 'entregado' | 'cancelado';
+export type EstadoPedido = 'Pendiente' | 'Confirmado' | 'En camino' | 'Entregado' | 'Cancelado';
 
 export interface Pedido {
   id_pedido: number;
   id_cliente: number;
-  fecha: string;
+  fecha_pedido: string;
+  estado: string;
   total: number;
-  estado: EstadoPedido;
   cliente?: Cliente;
   detalles?: DetallePedido[];
 }
 
+export type TipoProducto = 'Libro' | 'Revista';
+
 export interface DetallePedido {
   id_detalle: number;
   id_pedido: number;
-  id_libro?: number;
-  id_revista?: number;
+  tipo_producto: TipoProducto;
+  id_producto: number;
   cantidad: number;
   precio_unitario: number;
-  libro?: Libro;
-  revista?: Revista;
+  producto?: Libro | Revista;
 }
 
 export interface CartItem {
