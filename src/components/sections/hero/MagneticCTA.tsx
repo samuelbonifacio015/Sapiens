@@ -1,13 +1,17 @@
 import { useRef } from 'react';
+import type { ReactNode } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 interface Props {
   href: string;
-  children: React.ReactNode;
+  children: ReactNode;
   variant?: 'primary' | 'ghost';
+  target?: string;
+  rel?: string;
+  'aria-label'?: string;
 }
 
-export default function MagneticCTA({ href, children, variant = 'primary' }: Props) {
+export default function MagneticCTA({ href, children, variant = 'primary', target, rel, 'aria-label': ariaLabel }: Props) {
   const ref = useRef<HTMLAnchorElement>(null);
 
   const x = useMotionValue(0);
@@ -39,6 +43,9 @@ export default function MagneticCTA({ href, children, variant = 'primary' }: Pro
     <motion.a
       ref={ref}
       href={href}
+      target={target}
+      rel={rel}
+      aria-label={ariaLabel}
       style={{ x: springX, y: springY }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
