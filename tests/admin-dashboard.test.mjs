@@ -16,6 +16,7 @@ test('admin dashboard focuses on security and scale readiness', () => {
 });
 
 test('admin layout supports class-based theme toggle', () => {
+  assert.match(adminLayout, /@import '..\/..\/styles\/tailwind\.css'/);
   assert.match(adminLayout, /localStorage\.getItem\('theme'\)/);
   assert.match(adminLayout, /id="admin-theme-toggle"/);
   assert.match(adminLayout, /document\.documentElement\.classList\.contains\('dark'\)/);
