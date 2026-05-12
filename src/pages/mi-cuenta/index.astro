@@ -2,9 +2,13 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
-import { getRecentPedidos, getPedidos } from '../../lib/db/queries/pedidos';
+import { getPedidosByCliente } from '../../lib/db/queries/pedidos';
 
-const [recentPedidos, pedidos] = await Promise.all([getRecentPedidos(3), getPedidos()]);
+const user = Astro.locals.user;
+if (!user) return Astro.redirect('/iniciar-sesion?next=/mi-cuenta');
+
+const pedidos = await getPedidosByCliente(user.id);
+const recentPedidos = pedidos.slice(0, 3);
 
 const estadoColor: Record<string, string> = {
   pendiente: 'bg-warning/10 text-warning',
