@@ -4,6 +4,7 @@ import { getBookCoverSrc } from '../../lib/book-covers.js';
 import { getMagazineCoverSrc } from '../../lib/magazine-covers.js';
 import Badge from './Badge.astro';
 import StockIndicator from './StockIndicator.astro';
+import AddToCartButton from '../cart/AddToCartButton';
 
 interface Props {
   producto: Libro | Revista;
@@ -26,6 +27,8 @@ const frecuencia = revista?.frecuencia ?? '';
 const href = isLibro ? `/libros/${libro!.id_libro}` : `/revistas/${revista!.id_revista}`;
 const aspectRatio = isLibro ? 'aspect-[2/3]' : 'aspect-[3/4]';
 const coverSrc = libro ? getBookCoverSrc(libro) : revista ? getMagazineCoverSrc(revista) : '';
+const isCustomer = Astro.locals.user?.rol === 'USER';
+const loginHref = `/iniciar-sesion?next=${encodeURIComponent(`${Astro.url.pathname}${Astro.url.search}`)}`;
 ---
 
 <article class="group flex flex-col bg-surface border border-border rounded overflow-hidden hover:border-primary transition-colors duration-150">
@@ -68,13 +71,13 @@ const coverSrc = libro ? getBookCoverSrc(libro) : revista ? getMagazineCoverSrc(
       <StockIndicator stock={stock} />
     </div>
 
-    <button
-      type="button"
-      disabled={stock === 0}
-      aria-label={`Agregar ${titulo} al carrito`}
-      class="w-full mt-2 px-4 py-2.5 bg-primary text-bg text-sm font-inter font-medium rounded transition-opacity duration-150 hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed md:opacity-0 md:group-hover:opacity-100"
-    >
-      {stock === 0 ? 'Sin stock' : 'Agregar al carrito'}
-    </button>
+    <AddToCartButton
+      producto={producto}
+      tipo={tipo}
+      isCustomer={isCustomer}
+      loginHref={loginHref}
+      className="w-full mt-2 px-4 py-2.5 bg-primary text-bg text-sm font-inter font-medium rounded transition-opacity duration-150 hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed md:opacity-0 md:group-hover:opacity-100"
+      client:load
+    />
   </div>
 </article>

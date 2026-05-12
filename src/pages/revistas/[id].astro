@@ -5,6 +5,7 @@ import Footer from '../../components/layout/Footer.astro';
 import StockIndicator from '../../components/ui/StockIndicator.astro';
 import Badge from '../../components/ui/Badge.astro';
 import ProductCard from '../../components/ui/ProductCard.astro';
+import ProductPurchasePanel from '../../components/cart/ProductPurchasePanel';
 import { getRevistaById, getRevistasByCategoria } from '../../lib/db/queries/revistas';
 import { getMagazineCoverSrc } from '../../lib/magazine-covers.js';
 
@@ -18,6 +19,8 @@ const related = (await getRevistasByCategoria(revista.id_categoria))
   .map(r => ({ producto: r, tipo: 'revista' as const }));
 
 const coverSrc = getMagazineCoverSrc(revista);
+const isCustomer = Astro.locals.user?.rol === 'USER';
+const loginHref = `/iniciar-sesion?next=${encodeURIComponent(`${Astro.url.pathname}${Astro.url.search}`)}`;
 ---
 
 <BaseLayout title={`${revista.titulo} — Sapiens`}>
@@ -86,16 +89,13 @@ const coverSrc = getMagazineCoverSrc(revista);
           </tbody>
         </table>
 
-        <div class="flex flex-col gap-3 pt-2">
-          <button
-            type="button"
-            disabled={revista.stock === 0}
-            aria-label={revista.stock === 0 ? 'Sin stock' : `Agregar ${revista.titulo} al carrito`}
-            class="w-full py-4 bg-[#0D0D0D] text-[#F8F8F5] font-inter font-medium text-sm rounded hover:bg-[#1A1A1A] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {revista.stock === 0 ? 'Sin stock' : 'Agregar al carrito'}
-          </button>
-        </div>
+        <ProductPurchasePanel
+          producto={revista}
+          tipo="revista"
+          isCustomer={isCustomer}
+          loginHref={loginHref}
+          client:load
+        />
       </div>
     </div>
 

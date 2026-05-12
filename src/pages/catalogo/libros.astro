@@ -6,13 +6,18 @@ import ProductCard from '../../components/ui/ProductCard.astro';
 import FilterSidebar from '../../components/sections/FilterSidebar';
 import { getLibros } from '../../lib/db/queries/libros';
 import { getCategorias } from '../../lib/db/queries/categorias';
+import { applyCatalogFilters, parseCatalogFilters } from '../../lib/catalog-filters';
 
 const [libros, categorias] = await Promise.all([getLibros(), getCategorias()]);
+const allItems = libros.map(libro => ({ producto: libro, tipo: 'libro' as const }));
 
 const categoriasWithCount = categorias.map(cat => ({
   ...cat,
   count: libros.filter(l => l.id_categoria === cat.id_categoria).length,
 }));
+
+const filters = parseCatalogFilters(Astro.url.searchParams, new Set(categorias.map(cat => cat.id_categoria)));
+const filteredItems = applyCatalogFilters(allItems, filters);
 ---
 
 <BaseLayout title="Libros — Sapiens">
@@ -33,11 +38,17 @@ const categoriasWithCount = categorias.map(cat => ({
     <div class="flex gap-10 items-start">
       <FilterSidebar categorias={categoriasWithCount} client:load />
       <div class="flex-1 min-w-0">
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-          {libros.map(libro => (
-            <ProductCard producto={libro} tipo="libro" />
-          ))}
-        </div>
+        {filteredItems.length === 0 ? (
+          <div class="flex flex-col items-center justify-center py-20 text-center">
+            <p class="font-inter text-text-muted text-base">No encontramos productos con esos filtros.</p>
+          </div>
+        ) : (
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+            {filteredItems.map(({ producto }) => (
+              <ProductCard producto={producto} tipo="libro" />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   </main>

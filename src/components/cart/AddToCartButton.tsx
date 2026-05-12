@@ -1,0 +1,51 @@
+import { useState } from 'react';
+import type { Libro, Revista } from '../../types/index.js';
+import { useCart } from '../../lib/cart-store.js';
+
+interface AddToCartButtonProps {
+  producto: Libro | Revista;
+  tipo: 'libro' | 'revista';
+  isCustomer: boolean;
+  loginHref: string;
+  quantity?: number;
+  className?: string;
+  children?: React.ReactNode;
+}
+
+export default function AddToCartButton({
+  producto,
+  tipo,
+  isCustomer,
+  loginHref,
+  quantity = 1,
+  className = '',
+  children,
+}: AddToCartButtonProps) {
+  const { addToCart } = useCart();
+  const [added, setAdded] = useState(false);
+  const stock = Math.max(0, producto.stock ?? 0);
+  const disabled = stock === 0;
+
+  const handleClick = () => {
+    if (!isCustomer) {
+      window.location.assign(loginHref);
+      return;
+    }
+    if (disabled) return;
+    addToCart(producto, tipo, quantity);
+    setAdded(true);
+    window.setTimeout(() => setAdded(false), 1400);
+  };
+
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={handleClick}
+      aria-label={disabled ? 'Sin stock' : `Agregar ${producto.titulo} al carrito`}
+      className={className}
+    >
+      {disabled ? 'Sin stock' : added ? 'Agregado' : children ?? 'Agregar al carrito'}
+    </button>
+  );
+}
