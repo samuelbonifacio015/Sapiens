@@ -26,6 +26,13 @@ test('catalog and detail product actions use cart React components', () => {
   assert.match(magazineDetail, /<ProductPurchasePanel\b/);
 });
 
+test('cart actions are available to any authenticated role including admins', () => {
+  for (const source of [productCard, bookDetail, magazineDetail, header]) {
+    assert.match(source, /const isAuthenticated = Boolean\(user\)/);
+    assert.doesNotMatch(source, /rol === 'USER'/);
+  }
+});
+
 test('header shows reactive cart badge and drawer controls', () => {
   assert.match(header, /import HeaderCart from/);
   assert.match(header, /<HeaderCart\b[^>]*client:load/);

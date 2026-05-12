@@ -5,7 +5,7 @@ import { useCart } from '../../lib/cart-store.js';
 interface AddToCartButtonProps {
   producto: Libro | Revista;
   tipo: 'libro' | 'revista';
-  isCustomer: boolean;
+  isAuthenticated: boolean;
   loginHref: string;
   quantity?: number;
   className?: string;
@@ -15,7 +15,7 @@ interface AddToCartButtonProps {
 export default function AddToCartButton({
   producto,
   tipo,
-  isCustomer,
+  isAuthenticated,
   loginHref,
   quantity = 1,
   className = '',
@@ -27,7 +27,7 @@ export default function AddToCartButton({
   const disabled = stock === 0;
 
   const handleClick = () => {
-    if (!isCustomer) {
+    if (!isAuthenticated) {
       window.location.assign(loginHref);
       return;
     }

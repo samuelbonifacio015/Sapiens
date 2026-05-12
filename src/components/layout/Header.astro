@@ -12,7 +12,7 @@ const navLinks = [
 
 const currentPath = Astro.url.pathname;
 const user = Astro.locals.user;
-const isCustomer = user?.rol === 'USER';
+const isAuthenticated = Boolean(user);
 const cartLoginHref = `/iniciar-sesion?next=${encodeURIComponent('/carrito')}`;
 ---
 
@@ -47,7 +47,7 @@ const cartLoginHref = `/iniciar-sesion?next=${encodeURIComponent('/carrito')}`;
     <!-- Actions -->
     <div class="flex items-center gap-4">
       <!-- Cart: HeaderCart listens for cart-update through useCart. -->
-      <HeaderCart isCustomer={isCustomer} loginHref={cartLoginHref} client:load />
+      <HeaderCart isAuthenticated={isAuthenticated} loginHref={cartLoginHref} client:load />
 
       <!-- Theme toggle -->
       <button

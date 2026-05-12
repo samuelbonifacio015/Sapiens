@@ -6,7 +6,7 @@ import AddToCartButton from './AddToCartButton.js';
 interface ProductPurchasePanelProps {
   producto: Libro | Revista;
   tipo: 'libro' | 'revista';
-  isCustomer: boolean;
+  isAuthenticated: boolean;
   loginHref: string;
 }
 
@@ -16,7 +16,7 @@ const primaryButtonClass =
 export default function ProductPurchasePanel({
   producto,
   tipo,
-  isCustomer,
+  isAuthenticated,
   loginHref,
 }: ProductPurchasePanelProps) {
   const { addToCart } = useCart();
@@ -29,7 +29,7 @@ export default function ProductPurchasePanel({
   };
 
   const handleBuyNow = () => {
-    if (!isCustomer) {
+    if (!isAuthenticated) {
       window.location.assign(loginHref);
       return;
     }
@@ -71,7 +71,7 @@ export default function ProductPurchasePanel({
       <AddToCartButton
         producto={producto}
         tipo={tipo}
-        isCustomer={isCustomer}
+        isAuthenticated={isAuthenticated}
         loginHref={loginHref}
         quantity={tipo === 'libro' ? quantity : 1}
         className={primaryButtonClass}

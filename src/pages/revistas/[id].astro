@@ -19,7 +19,8 @@ const related = (await getRevistasByCategoria(revista.id_categoria))
   .map(r => ({ producto: r, tipo: 'revista' as const }));
 
 const coverSrc = getMagazineCoverSrc(revista);
-const isCustomer = Astro.locals.user?.rol === 'USER';
+const user = Astro.locals.user;
+const isAuthenticated = Boolean(user);
 const loginHref = `/iniciar-sesion?next=${encodeURIComponent(`${Astro.url.pathname}${Astro.url.search}`)}`;
 ---
 
@@ -92,7 +93,7 @@ const loginHref = `/iniciar-sesion?next=${encodeURIComponent(`${Astro.url.pathna
         <ProductPurchasePanel
           producto={revista}
           tipo="revista"
-          isCustomer={isCustomer}
+          isAuthenticated={isAuthenticated}
           loginHref={loginHref}
           client:load
         />

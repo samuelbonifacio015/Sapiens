@@ -4,16 +4,16 @@ import { useCart } from '../../lib/cart-store.js';
 import CartDrawer from './CartDrawer.js';
 
 interface HeaderCartProps {
-  isCustomer: boolean;
+  isAuthenticated: boolean;
   loginHref: string;
 }
 
-export default function HeaderCart({ isCustomer, loginHref }: HeaderCartProps) {
+export default function HeaderCart({ isAuthenticated, loginHref }: HeaderCartProps) {
   const { count } = useCart();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleClick = () => {
-    if (!isCustomer) {
+    if (!isAuthenticated) {
       window.location.assign(loginHref);
       return;
     }
