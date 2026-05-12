@@ -96,9 +96,11 @@ const estadoLabel: Record<string, string> = {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       msg.textContent = 'Guardando...';
+      const csrfRes = await fetch('/api/auth/csrf');
+      const { csrfToken } = await csrfRes.json();
       const res = await fetch(`/api/pedidos/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
         body: JSON.stringify({ estado: sel.value }),
       });
       msg.textContent = res.ok ? 'Guardado' : 'Error';

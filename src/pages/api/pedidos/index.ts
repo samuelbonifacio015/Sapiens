@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { checkout, findPedidosByCliente, findAllPedidos } from '../../../lib/repos/pedidos.js';
 import { checkoutSchema } from '../../../lib/validators/pedido.js';
-import { handleApi, json, requireUser } from '../../../lib/http.js';
+import { handleApi, json, requireCsrf, requireUser } from '../../../lib/http.js';
 
 export const prerender = false;
 
@@ -11,7 +11,8 @@ export const GET: APIRoute = ({ locals }) => handleApi(async () => {
   return json(list);
 });
 
-export const POST: APIRoute = ({ request, locals }) => handleApi(async () => {
+export const POST: APIRoute = ({ request, cookies, locals }) => handleApi(async () => {
+  requireCsrf(request, cookies);
   const u = requireUser(locals);
   const { items } = checkoutSchema.parse(await request.json());
   const id = await checkout(u.id, items);

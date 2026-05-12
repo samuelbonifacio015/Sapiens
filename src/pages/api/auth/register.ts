@@ -2,11 +2,12 @@ import type { APIRoute } from 'astro';
 import { registerSchema } from '../../../lib/validators/auth.js';
 import { createCliente, findClienteByCorreo } from '../../../lib/repos/clientes.js';
 import { hashPassword, signToken, SESSION_COOKIE, SESSION_MAX_AGE } from '../../../lib/auth.js';
-import { handleApi, json, error } from '../../../lib/http.js';
+import { handleApi, json, error, requireCsrf } from '../../../lib/http.js';
 
 export const prerender = false;
 
 export const POST: APIRoute = ({ request, cookies }) => handleApi(async () => {
+  requireCsrf(request, cookies);
   const data = registerSchema.parse(await request.json());
   if (await findClienteByCorreo(data.correo)) return error(409, 'Email already registered');
 

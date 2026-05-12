@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { findPedidoById, findDetallesByPedido, updateEstadoPedido } from '../../../lib/repos/pedidos.js';
 import { estadoUpdateSchema } from '../../../lib/validators/pedido.js';
-import { handleApi, json, error, requireUser, requireAdmin } from '../../../lib/http.js';
+import { handleApi, json, error, requireUser, requireAdmin, requireCsrf } from '../../../lib/http.js';
 
 export const prerender = false;
 
@@ -15,7 +15,8 @@ export const GET: APIRoute = ({ params, locals }) => handleApi(async () => {
   return json(p);
 });
 
-export const PATCH: APIRoute = ({ params, request, locals }) => handleApi(async () => {
+export const PATCH: APIRoute = ({ params, request, cookies, locals }) => handleApi(async () => {
+  requireCsrf(request, cookies);
   requireAdmin(locals);
   const id = Number(params.id);
   const { estado } = estadoUpdateSchema.parse(await request.json());
