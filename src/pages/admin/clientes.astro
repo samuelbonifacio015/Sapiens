@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
+<<<<<<< HEAD
 import { findAllClientes } from '../../lib/repos/clientes.js';
 import { db } from '../../lib/db.js';
 
@@ -13,6 +14,11 @@ const [countRows]: any = await db.query(
 );
 const counts: Record<number, number> = {};
 for (const r of countRows) counts[r.ID_Cliente] = Number(r.total);
+=======
+import { getClientes } from '../../lib/db/queries/pedidos';
+
+const clientes = await getClientes();
+>>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 ---
 
 <AdminLayout title="Clientes — Admin Sapiens">

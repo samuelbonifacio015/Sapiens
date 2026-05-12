@@ -8,6 +8,7 @@ import ProductGrid from '../components/sections/ProductGrid.astro';
 import BenefitsBar from '../components/sections/BenefitsBar.astro';
 import SearchBar from '../components/ui/SearchBar';
 import type { Libro, Revista } from '../types/index.js';
+<<<<<<< HEAD
 import { findAllLibros } from '../lib/repos/libros.js';
 import { findAllRevistas } from '../lib/repos/revistas.js';
 
@@ -17,7 +18,13 @@ const [libros, revistas] = await Promise.all([
   findAllLibros({ size: 8 }),
   findAllRevistas({ size: 8 }),
 ]);
+=======
+import { getLibros } from '../lib/db/queries/libros';
+import { getRevistas } from '../lib/db/queries/revistas';
+>>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 
+const libros = await getLibros();
+const revistas = await getRevistas();
 const featuredBooks = libros.slice(0, 4).map(l => ({ producto: l as Libro, tipo: 'libro' as const }));
 const featuredMagazines = revistas.slice(0, 4).map(r => ({ producto: r as Revista, tipo: 'revista' as const }));
 

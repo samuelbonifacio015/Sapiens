@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
 import ProductCard from '../../components/ui/ProductCard.astro';
+<<<<<<< HEAD
 import { findAllCategorias } from '../../lib/repos/categorias.js';
 import { findAllLibros } from '../../lib/repos/libros.js';
 import { findAllRevistas } from '../../lib/repos/revistas.js';
@@ -24,6 +25,22 @@ const allItems = [
   ...libros.map(l => ({ producto: l, tipo: 'libro' as const })),
   ...revistas.map(r => ({ producto: r, tipo: 'revista' as const })),
 ];
+=======
+import { getCategoriaBySlug } from '../../lib/db/queries/categorias';
+import { getLibrosByCategoria } from '../../lib/db/queries/libros';
+import { getRevistasByCategoria } from '../../lib/db/queries/revistas';
+
+const { categoria: slug } = Astro.params;
+const categoria = await getCategoriaBySlug(slug!);
+if (!categoria) return Astro.redirect('/categorias');
+
+const [librosItems, revistasItems] = await Promise.all([
+  getLibrosByCategoria(categoria.id_categoria).then(ls => ls.map(l => ({ producto: l, tipo: 'libro' as const }))),
+  getRevistasByCategoria(categoria.id_categoria).then(rs => rs.map(r => ({ producto: r, tipo: 'revista' as const }))),
+]);
+
+const allItems = [...librosItems, ...revistasItems];
+>>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 ---
 
 <BaseLayout title={`${categoria.nombre_categoria} — Sapiens`}>

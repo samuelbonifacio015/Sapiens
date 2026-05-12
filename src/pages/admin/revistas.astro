@@ -1,8 +1,13 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
+<<<<<<< HEAD
 import { findAllRevistas } from '../../lib/repos/revistas.js';
 
 const revistas = await findAllRevistas({ size: 500 });
+=======
+import { getRevistas } from '../../lib/db/queries/revistas';
+const revistas = await getRevistas();
+>>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 ---
 
 <AdminLayout title="Revistas — Admin Sapiens">

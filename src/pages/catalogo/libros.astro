@@ -4,6 +4,7 @@ import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
 import ProductCard from '../../components/ui/ProductCard.astro';
 import FilterSidebar from '../../components/sections/FilterSidebar';
+<<<<<<< HEAD
 import { findAllLibros } from '../../lib/repos/libros.js';
 import { findAllCategorias } from '../../lib/repos/categorias.js';
 
@@ -11,6 +12,12 @@ const [libros, categorias] = await Promise.all([
   findAllLibros({ size: 200 }),
   findAllCategorias(),
 ]);
+=======
+import { getLibros } from '../../lib/db/queries/libros';
+import { getCategorias } from '../../lib/db/queries/categorias';
+
+const [libros, categorias] = await Promise.all([getLibros(), getCategorias()]);
+>>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 
 const categoriasWithCount = categorias.map(cat => ({
   ...cat,

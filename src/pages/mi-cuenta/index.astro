@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
+<<<<<<< HEAD
 import { findPedidosByCliente } from '../../lib/repos/pedidos.js';
 
 export const prerender = false;
@@ -10,6 +11,11 @@ if (!Astro.locals.user) return Astro.redirect('/iniciar-sesion?next=/mi-cuenta')
 
 const pedidos = await findPedidosByCliente(Astro.locals.user.id);
 const recentPedidos = pedidos.slice(0, 3);
+=======
+import { getRecentPedidos, getPedidos } from '../../lib/db/queries/pedidos';
+
+const [recentPedidos, pedidos] = await Promise.all([getRecentPedidos(3), getPedidos()]);
+>>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 
 const estadoColor: Record<string, string> = {
   Pendiente: 'bg-warning/10 text-warning',

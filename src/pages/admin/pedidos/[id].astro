@@ -1,10 +1,20 @@
 ---
 import AdminLayout from '../../../components/layout/AdminLayout.astro';
+<<<<<<< HEAD
 import { findPedidoById, findDetallesByPedido } from '../../../lib/repos/pedidos.js';
 
 export const prerender = false;
 
 if (Astro.locals.user?.rol !== 'ADMIN') return Astro.redirect('/iniciar-sesion');
+=======
+import { getPedidoById } from '../../../lib/db/queries/pedidos';
+import { getLibros } from '../../../lib/db/queries/libros';
+import { getRevistas } from '../../../lib/db/queries/revistas';
+
+const id = Number(Astro.params.id);
+const [pedido, libros, revistas] = await Promise.all([getPedidoById(id), getLibros(), getRevistas()]);
+if (!pedido) return Astro.redirect('/admin/pedidos');
+>>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 
 const id = Number(Astro.params.id);
 const pedido = await findPedidoById(id);

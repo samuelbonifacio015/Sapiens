@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../../components/layout/AdminLayout.astro';
+<<<<<<< HEAD
 import { findAllPedidos } from '../../../lib/repos/pedidos.js';
 
 export const prerender = false;
@@ -7,6 +8,11 @@ export const prerender = false;
 if (Astro.locals.user?.rol !== 'ADMIN') return Astro.redirect('/iniciar-sesion');
 
 const pedidos = await findAllPedidos();
+=======
+import { getPedidos } from '../../../lib/db/queries/pedidos';
+
+const pedidos = await getPedidos();
+>>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 
 const estadoColor: Record<string, string> = {
   Pendiente: 'bg-warning/10 text-warning',

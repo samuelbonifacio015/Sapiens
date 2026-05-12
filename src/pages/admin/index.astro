@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
+<<<<<<< HEAD
 import { findAllPedidos } from '../../lib/repos/pedidos.js';
 import { findAllLibros } from '../../lib/repos/libros.js';
 import { findAllRevistas } from '../../lib/repos/revistas.js';
@@ -26,6 +27,30 @@ const clientes = Number(clientesRow.total);
 
 const recentPedidos = pedidos.slice(0, 10);
 const lowStockItems = stockBajoItems.slice(0, 5);
+=======
+import { getPedidos, getClientes } from '../../lib/db/queries/pedidos';
+import { getLowStockLibros } from '../../lib/db/queries/libros';
+import { getLowStockRevistas } from '../../lib/db/queries/revistas';
+
+const today = new Date().toISOString().split('T')[0];
+const [pedidos, lowLibros, lowRevistas, todosClientes] = await Promise.all([
+  getPedidos(),
+  getLowStockLibros(4),
+  getLowStockRevistas(4),
+  getClientes(),
+]);
+
+const pedidosHoy = pedidos.filter(p => p.fecha === today).length;
+const ingresosMes = pedidos.filter(p => p.estado !== 'cancelado').reduce((sum, p) => sum + p.total, 0);
+const stockBajo = lowLibros.length + lowRevistas.length;
+const clientes = todosClientes.length;
+
+const recentPedidos = pedidos.slice(0, 10);
+const lowStockItems = [
+  ...lowLibros.map(l => ({ ...l, _tipo: 'libro' })),
+  ...lowRevistas.map(r => ({ ...r, _tipo: 'revista' })),
+].slice(0, 5);
+>>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 
 const estadoColor: Record<string, string> = {
   Pendiente: 'bg-warning/10 text-warning',
@@ -109,7 +134,7 @@ const estadoColor: Record<string, string> = {
                 <div class="flex items-center justify-between px-4 py-3">
                   <div class="min-w-0">
                     <p class="font-inter text-sm text-text line-clamp-1">{item.titulo}</p>
-                    <p class="font-inter text-xs text-text-muted mt-0.5">{'id_libro' in item ? 'Libro' : 'Revista'}</p>
+                    <p class="font-inter text-xs text-text-muted mt-0.5">{item._tipo === 'libro' ? 'Libro' : 'Revista'}</p>
                   </div>
                   <span class="font-inter font-bold text-warning text-sm ml-3 flex-shrink-0">
                     {item.stock} ud.

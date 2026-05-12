@@ -1,9 +1,16 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
+<<<<<<< HEAD
 import { findAllAutores } from '../../lib/repos/autores.js';
 import { findAllLibros } from '../../lib/repos/libros.js';
 
 const [autores, libros] = await Promise.all([findAllAutores(), findAllLibros({ size: 500 })]);
+=======
+import { getAutores } from '../../lib/db/queries/autores';
+import { getLibros } from '../../lib/db/queries/libros';
+
+const [autores, libros] = await Promise.all([getAutores(), getLibros()]);
+>>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 ---
 
 <AdminLayout title="Autores — Admin Sapiens">

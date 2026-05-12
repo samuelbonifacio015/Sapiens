@@ -1,8 +1,13 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
+<<<<<<< HEAD
 import { findAllLibros } from '../../lib/repos/libros.js';
 
 const libros = await findAllLibros({ size: 500 });
+=======
+import { getLibros } from '../../lib/db/queries/libros';
+const libros = await getLibros();
+>>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 ---
 
 <AdminLayout title="Libros — Admin Sapiens">

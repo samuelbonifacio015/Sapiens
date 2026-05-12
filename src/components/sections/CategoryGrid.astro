@@ -1,7 +1,13 @@
 ---
+<<<<<<< HEAD
 import { findAllCategorias } from '../../lib/repos/categorias.js';
 
 const categorias = await findAllCategorias();
+=======
+import { getCategorias } from '../../lib/db/queries/categorias';
+
+const categorias = await getCategorias();
+>>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 
 const categoryIcons: Record<string, string> = {
   'Literatura Peruana': '🇵🇪',

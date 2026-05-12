@@ -1,7 +1,14 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
+<<<<<<< HEAD
 import { findAllPedidos } from '../../lib/repos/pedidos.js';
 import { findAllLibros } from '../../lib/repos/libros.js';
+=======
+import { getPedidos } from '../../lib/db/queries/pedidos';
+import { getLibros } from '../../lib/db/queries/libros';
+
+const [pedidos, libros] = await Promise.all([getPedidos(), getLibros()]);
+>>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 
 export const prerender = false;
 
