@@ -8,6 +8,7 @@ const user = Astro.locals.user;
 if (!user) return Astro.redirect('/iniciar-sesion?next=/mi-cuenta/pedidos');
 
 const pedidos = await getPedidosByCliente(user.id);
+const activePedidos = pedidos.filter((pedido) => ['pendiente', 'confirmado', 'enviado'].includes(String(pedido.estado).toLowerCase())).length;
 
 const estadoColor: Record<string, string> = {
   pendiente: 'bg-warning/10 text-warning border-warning/20',
@@ -17,11 +18,15 @@ const estadoColor: Record<string, string> = {
   cancelado: 'bg-error/10 text-error border-error/20',
 };
 const estadoLabel: Record<string, string> = {
-  pendiente: 'Pendiente', confirmado: 'Confirmado', enviado: 'En camino', entregado: 'Entregado', cancelado: 'Cancelado',
+  pendiente: 'Pendiente',
+  confirmado: 'Confirmado',
+  enviado: 'En camino',
+  entregado: 'Entregado',
+  cancelado: 'Cancelado',
 };
 ---
 
-<BaseLayout title="Mis pedidos — Sapiens">
+<BaseLayout title="Mis pedidos - Sapiens">
   <Header />
   <main class="max-w-[1280px] mx-auto px-6 py-10">
     <nav class="flex items-center gap-2 text-xs font-inter text-text-muted mb-6" aria-label="Breadcrumb">
@@ -29,13 +34,23 @@ const estadoLabel: Record<string, string> = {
       <span aria-hidden="true">/</span>
       <span class="text-text" aria-current="page">Pedidos</span>
     </nav>
-    <h1 class="font-playfair font-bold text-3xl text-text mb-8">Mis pedidos</h1>
+
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
+      <div>
+        <h1 class="font-playfair font-bold text-3xl text-text">Mis pedidos</h1>
+        <p class="font-inter text-sm text-text-muted mt-2">{pedidos.length} pedidos propios, {activePedidos} activos.</p>
+      </div>
+      <a href="/catalogo" class="inline-flex items-center justify-center h-11 px-5 bg-text text-bg text-sm font-inter font-medium rounded hover:opacity-90 transition-opacity">Explorar catalogo</a>
+    </div>
 
     {pedidos.length === 0 ? (
-      <div class="flex flex-col items-center justify-center py-20 text-center">
-        <span class="text-5xl mb-4" aria-hidden="true">📦</span>
-        <p class="font-inter text-text-muted">No has realizado pedidos aún.</p>
-        <a href="/catalogo" class="mt-4 text-sm font-inter text-text underline">Empezar a comprar</a>
+      <div class="flex flex-col items-center justify-center min-h-[360px] text-center border border-dashed border-border rounded bg-surface px-6">
+        <p class="font-playfair font-bold text-2xl text-text">Aun no hay pedidos en tu cuenta</p>
+        <p class="font-inter text-sm text-text-muted mt-3 max-w-md">Cuando completes una compra, este panel mostrara el total, la fecha y el estado de preparacion o envio.</p>
+        <div class="flex flex-wrap justify-center gap-3 mt-6">
+          <a href="/catalogo" class="inline-flex items-center justify-center h-10 px-4 bg-text text-bg text-sm font-inter font-medium rounded hover:opacity-90 transition-opacity">Explorar catalogo</a>
+          <a href="/ayuda" class="inline-flex items-center justify-center h-10 px-4 border border-border text-text text-sm font-inter font-medium rounded hover:border-text transition-colors">Centro de ayuda</a>
+        </div>
       </div>
     ) : (
       <div class="flex flex-col gap-4">
