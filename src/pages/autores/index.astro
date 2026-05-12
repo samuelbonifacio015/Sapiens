@@ -2,8 +2,10 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
-import { autores } from '../../lib/mocks/autores.js';
-import { libros } from '../../lib/mocks/libros.js';
+import { getAutores } from '../../lib/db/queries/autores';
+import { getLibros } from '../../lib/db/queries/libros';
+
+const [autores, libros] = await Promise.all([getAutores(), getLibros()]);
 ---
 
 <BaseLayout title="Autores — Sapiens">

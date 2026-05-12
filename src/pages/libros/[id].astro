@@ -5,19 +5,14 @@ import Footer from '../../components/layout/Footer.astro';
 import StockIndicator from '../../components/ui/StockIndicator.astro';
 import Badge from '../../components/ui/Badge.astro';
 import ProductCard from '../../components/ui/ProductCard.astro';
-import { libros } from '../../lib/mocks/libros.js';
+import { getLibroById, getLibrosByAutor } from '../../lib/db/queries/libros';
 
-export function getStaticPaths() {
-  return libros.map(libro => ({
-    params: { id: String(libro.id_libro) },
-    props: { libro },
-  }));
-}
+const id = Number(Astro.params.id);
+const libro = await getLibroById(id);
+if (!libro) return Astro.redirect('/catalogo/libros');
 
-const { libro } = Astro.props;
-
-const related = libros
-  .filter(l => l.id_autor === libro.id_autor && l.id_libro !== libro.id_libro)
+const related = (await getLibrosByAutor(libro.id_autor))
+  .filter(l => l.id_libro !== libro.id_libro)
   .slice(0, 4)
   .map(l => ({ producto: l, tipo: 'libro' as const }));
 

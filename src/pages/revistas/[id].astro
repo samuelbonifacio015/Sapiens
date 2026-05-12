@@ -5,19 +5,14 @@ import Footer from '../../components/layout/Footer.astro';
 import StockIndicator from '../../components/ui/StockIndicator.astro';
 import Badge from '../../components/ui/Badge.astro';
 import ProductCard from '../../components/ui/ProductCard.astro';
-import { revistas } from '../../lib/mocks/revistas.js';
+import { getRevistaById, getRevistasByCategoria } from '../../lib/db/queries/revistas';
 
-export function getStaticPaths() {
-  return revistas.map(revista => ({
-    params: { id: String(revista.id_revista) },
-    props: { revista },
-  }));
-}
+const id = Number(Astro.params.id);
+const revista = await getRevistaById(id);
+if (!revista) return Astro.redirect('/catalogo/revistas');
 
-const { revista } = Astro.props;
-
-const related = revistas
-  .filter(r => r.id_categoria === revista.id_categoria && r.id_revista !== revista.id_revista)
+const related = (await getRevistasByCategoria(revista.id_categoria))
+  .filter(r => r.id_revista !== revista.id_revista)
   .slice(0, 4)
   .map(r => ({ producto: r, tipo: 'revista' as const }));
 

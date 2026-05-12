@@ -4,9 +4,11 @@ import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
 import ProductCard from '../../components/ui/ProductCard.astro';
 import FilterSidebar from '../../components/sections/FilterSidebar';
-import { libros } from '../../lib/mocks/libros.js';
-import { revistas } from '../../lib/mocks/revistas.js';
-import { categorias } from '../../lib/mocks/categorias.js';
+import { getLibros } from '../../lib/db/queries/libros';
+import { getRevistas } from '../../lib/db/queries/revistas';
+import { getCategorias } from '../../lib/db/queries/categorias';
+
+const [libros, revistas, categorias] = await Promise.all([getLibros(), getRevistas(), getCategorias()]);
 
 const allItems = [
   ...libros.map(l => ({ producto: l, tipo: 'libro' as const })),

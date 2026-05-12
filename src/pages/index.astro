@@ -8,9 +8,11 @@ import ProductGrid from '../components/sections/ProductGrid.astro';
 import BenefitsBar from '../components/sections/BenefitsBar.astro';
 import SearchBar from '../components/ui/SearchBar';
 import type { Libro, Revista } from '../types/index.js';
-import { libros } from '../lib/mocks/libros.js';
-import { revistas } from '../lib/mocks/revistas.js';
+import { getLibros } from '../lib/db/queries/libros';
+import { getRevistas } from '../lib/db/queries/revistas';
 
+const libros = await getLibros();
+const revistas = await getRevistas();
 const featuredBooks = libros.slice(0, 4).map(l => ({ producto: l as Libro, tipo: 'libro' as const }));
 const featuredMagazines = revistas.slice(0, 4).map(r => ({ producto: r as Revista, tipo: 'revista' as const }));
 

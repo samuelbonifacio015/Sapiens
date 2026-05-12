@@ -4,8 +4,10 @@ import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
 import ProductCard from '../../components/ui/ProductCard.astro';
 import FilterSidebar from '../../components/sections/FilterSidebar';
-import { revistas } from '../../lib/mocks/revistas.js';
-import { categorias } from '../../lib/mocks/categorias.js';
+import { getRevistas } from '../../lib/db/queries/revistas';
+import { getCategorias } from '../../lib/db/queries/categorias';
+
+const [revistas, categorias] = await Promise.all([getRevistas(), getCategorias()]);
 
 const categoriasWithCount = categorias.map(cat => ({
   ...cat,

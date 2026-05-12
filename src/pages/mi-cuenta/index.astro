@@ -2,9 +2,9 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
-import { pedidos } from '../../lib/mocks/pedidos.js';
+import { getRecentPedidos, getPedidos } from '../../lib/db/queries/pedidos';
 
-const recentPedidos = pedidos.slice(0, 3);
+const [recentPedidos, pedidos] = await Promise.all([getRecentPedidos(3), getPedidos()]);
 
 const estadoColor: Record<string, string> = {
   pendiente: 'bg-warning/10 text-warning',

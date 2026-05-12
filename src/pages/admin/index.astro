@@ -1,16 +1,27 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
-import { pedidos } from '../../lib/mocks/pedidos.js';
-import { libros } from '../../lib/mocks/libros.js';
-import { revistas } from '../../lib/mocks/revistas.js';
+import { getPedidos, getClientes } from '../../lib/db/queries/pedidos';
+import { getLowStockLibros } from '../../lib/db/queries/libros';
+import { getLowStockRevistas } from '../../lib/db/queries/revistas';
 
-const pedidosHoy = pedidos.filter(p => p.fecha === '2025-05-02').length;
+const today = new Date().toISOString().split('T')[0];
+const [pedidos, lowLibros, lowRevistas, todosClientes] = await Promise.all([
+  getPedidos(),
+  getLowStockLibros(4),
+  getLowStockRevistas(4),
+  getClientes(),
+]);
+
+const pedidosHoy = pedidos.filter(p => p.fecha === today).length;
 const ingresosMes = pedidos.filter(p => p.estado !== 'cancelado').reduce((sum, p) => sum + p.total, 0);
-const stockBajo = [...libros, ...revistas].filter(p => p.stock > 0 && p.stock <= 4).length;
-const clientes = new Set(pedidos.map(p => p.id_cliente)).size;
+const stockBajo = lowLibros.length + lowRevistas.length;
+const clientes = todosClientes.length;
 
 const recentPedidos = pedidos.slice(0, 10);
-const lowStockItems = [...libros, ...revistas].filter(p => p.stock <= 4 && p.stock > 0).slice(0, 5);
+const lowStockItems = [
+  ...lowLibros.map(l => ({ ...l, _tipo: 'libro' })),
+  ...lowRevistas.map(r => ({ ...r, _tipo: 'revista' })),
+].slice(0, 5);
 
 const estadoColor: Record<string, string> = {
   pendiente: 'bg-warning/10 text-warning',
@@ -97,7 +108,7 @@ const estadoColor: Record<string, string> = {
                 <div class="flex items-center justify-between px-4 py-3">
                   <div class="min-w-0">
                     <p class="font-inter text-sm text-text line-clamp-1">{item.titulo}</p>
-                    <p class="font-inter text-xs text-text-muted mt-0.5">{'id_libro' in item ? 'Libro' : 'Revista'}</p>
+                    <p class="font-inter text-xs text-text-muted mt-0.5">{item._tipo === 'libro' ? 'Libro' : 'Revista'}</p>
                   </div>
                   <span class="font-inter font-bold text-warning text-sm ml-3 flex-shrink-0">
                     {item.stock} ud.

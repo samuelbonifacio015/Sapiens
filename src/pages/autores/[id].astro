@@ -3,18 +3,14 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
 import ProductCard from '../../components/ui/ProductCard.astro';
-import { autores } from '../../lib/mocks/autores.js';
-import { libros } from '../../lib/mocks/libros.js';
+import { getAutorById } from '../../lib/db/queries/autores';
+import { getLibrosByAutor } from '../../lib/db/queries/libros';
 
-export function getStaticPaths() {
-  return autores.map(autor => ({
-    params: { id: String(autor.id_autor) },
-    props: { autor },
-  }));
-}
+const id = Number(Astro.params.id);
+const autor = await getAutorById(id);
+if (!autor) return Astro.redirect('/autores');
 
-const { autor } = Astro.props;
-const autorLibros = libros.filter(l => l.id_autor === autor.id_autor);
+const autorLibros = await getLibrosByAutor(id);
 ---
 
 <BaseLayout title={`${autor.nombre_autor} — Sapiens`}>

@@ -3,8 +3,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
 import SearchResults from '../components/sections/SearchResults';
-import { libros } from '../lib/mocks/libros.js';
-import { revistas } from '../lib/mocks/revistas.js';
+import { getLibros } from '../lib/db/queries/libros';
+import { getRevistas } from '../lib/db/queries/revistas';
+
+const libros = await getLibros();
+const revistas = await getRevistas();
 ---
 
 <BaseLayout title="Buscar — Sapiens">
