@@ -1,22 +1,16 @@
 <claude-mem-context>
 # Memory Context
 
-# [Sapiens] recent context, 2026-05-12 11:17am GMT-5
+# [Sapiens] recent context, 2026-05-12 11:39am GMT-5
 
 Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision 🚨security_alert 🔐security_note
 Format: ID TIME TYPE TITLE
 Fetch details: get_observations([IDs]) | Search: mem-search skill
 
-Stats: 50 obs (12.452t read) | 181.579t work | 93% savings
+Stats: 50 obs (13.638t read) | 172.638t work | 92% savings
 
 ### May 12, 2026
-102 9:29a 🔴 Admin pages resolved—12 total files migrated to db/queries layer
-103 " 🔴 Authors page resolved—13 files migrated to db/queries layer
-104 " ✅ Field name updated to match db/queries data structure mapping
-105 " 🔴 Author detail page resolved and field names aligned—14 files migrated
-106 " 🔴 Admin authors page resolved and field aligned—15 files migrated
-107 " 🔴 Homepage resolved—16 files migrated to db/queries layer
-108 " 🔴 Admin inventory and catalog pages resolved—18 files migrated
+108 9:29a 🔴 Admin inventory and catalog pages resolved—18 files migrated
 109 " 🔴 Admin clients page resolved—19 files migrated; order counting logic removed
 110 9:30a ✅ Admin clients template fields updated to match db/queries Cliente structure
 111 " ✅ Reports page resolved with estado field value alignment to db/queries mapping
@@ -70,6 +64,12 @@ S44 Resolve dev server still referencing old database configuration despite .env
 149 11:14a 🔵 FeaturedCarousel lacks image rendering, only displays placeholder colors
 150 11:15a 🟣 Implemented image rendering in FeaturedCarousel and centralized book cover mapping
 151 11:17a ✅ Image carousel implementation builds successfully with no errors
+152 " 🔵 Carousel images render successfully; old placeholder titles removed
+153 11:18a 🔵 Carousel displays all books with selective image coverage; 6 mapped, 8 fallback to text
+154 " 🔄 Simplified book cover lookup to slug-only strategy; removed ID-based mapping
+155 11:19a ✅ Refactored book-covers module builds successfully with simplified lookup
+158 11:20a 🔵 Book database contains unmapped titles; Contarlo todo renders without image
+161 " 🔵 Only 6 of 14 books have cover image files in public directory
 
-Access 182k tokens of past work via get_observations([IDs]) or mem-search skill.
+Access 173k tokens of past work via get_observations([IDs]) or mem-search skill.
 </claude-mem-context>

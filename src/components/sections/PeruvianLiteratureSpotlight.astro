@@ -1,0 +1,81 @@
+---
+import type { Libro } from '../../types/index.js';
+import { getBookCoverSrc } from '../../lib/book-covers.js';
+
+interface Props {
+  books: Libro[];
+}
+
+const { books } = Astro.props;
+const displayBooks = books.slice(0, 4);
+---
+
+{displayBooks.length > 0 && (
+  <section class="py-16 lg:py-20 bg-bg">
+    <div class="max-w-[1280px] mx-auto px-6">
+      <div class="grid lg:grid-cols-[5fr_7fr] gap-10 lg:gap-14 items-start">
+        <div class="lg:sticky lg:top-24">
+          <p class="font-inter text-xs uppercase tracking-[0.18em] text-text-muted mb-3">Selección Sapiens</p>
+          <h2 class="font-playfair font-bold text-4xl lg:text-5xl text-text leading-tight">
+            Literatura peruana para una campaña con voz propia.
+          </h2>
+          <p class="font-inter text-text-muted text-base leading-relaxed mt-5 max-w-[48ch]">
+            Un bloque curado para que la home no se sienta como un catálogo genérico: autores nacionales, stock visible y acceso directo a compra.
+          </p>
+          <a
+            href="/categorias/literatura-peruana"
+            class="inline-flex items-center gap-2 mt-7 font-inter text-sm font-medium text-text hover:text-text-muted transition-colors underline"
+          >
+            Explorar literatura peruana
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </a>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4 lg:gap-6">
+          {displayBooks.map((book) => {
+            const coverSrc = getBookCoverSrc(book);
+            return (
+              <article class="group bg-surface border border-border rounded overflow-hidden transition-colors duration-150 hover:border-primary">
+                <a href={`/libros/${book.id_libro}`} class="grid grid-cols-[104px_1fr] min-h-[172px]" aria-label={`Ver detalle de ${book.titulo}`}>
+                  <div class="bg-border overflow-hidden">
+                    {coverSrc ? (
+                      <img
+                        src={coverSrc}
+                        alt={`Portada de ${book.titulo}`}
+                        loading="lazy"
+                        decoding="async"
+                        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                      />
+                    ) : (
+                      <div class="h-full w-full bg-border flex items-center justify-center px-3">
+                        <span class="font-playfair text-text-muted text-sm text-center leading-tight">{book.titulo}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div class="p-4 flex flex-col">
+                    <p class="font-inter text-[11px] uppercase tracking-[0.14em] text-text-muted">Perú</p>
+                    <h3 class="font-playfair font-semibold text-lg text-text leading-tight mt-2 group-hover:underline">
+                      {book.titulo}
+                    </h3>
+                    {book.autor?.nombre_autor && (
+                      <p class="font-inter text-sm text-text-muted mt-2">{book.autor.nombre_autor}</p>
+                    )}
+                    <div class="mt-auto pt-4 flex items-center justify-between gap-3">
+                      <span class="font-inter font-bold text-text text-sm">S/ {book.precio.toFixed(2)}</span>
+                      <span class={`font-inter text-xs ${book.stock > 0 ? 'text-success' : 'text-error'}`}>
+                        {book.stock > 0 ? 'Disponible' : 'Sin stock'}
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  </section>
+)}

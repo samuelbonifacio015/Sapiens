@@ -6,6 +6,7 @@ import StockIndicator from '../../components/ui/StockIndicator.astro';
 import Badge from '../../components/ui/Badge.astro';
 import ProductCard from '../../components/ui/ProductCard.astro';
 import { getLibroById, getLibrosByAutor } from '../../lib/db/queries/libros';
+import { getBookCoverSrc } from '../../lib/book-covers.js';
 
 const id = Number(Astro.params.id);
 const libro = await getLibroById(id);
@@ -16,7 +17,7 @@ const related = (await getLibrosByAutor(libro.id_autor))
   .slice(0, 4)
   .map(l => ({ producto: l, tipo: 'libro' as const }));
 
-const placeholderBg = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0'][libro.id_libro % 4];
+const coverSrc = getBookCoverSrc(libro);
 ---
 
 <BaseLayout title={`${libro.titulo} — Sapiens`}>
@@ -36,13 +37,22 @@ const placeholderBg = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0'][libro.id_libr
           <Badge variant="default" class="absolute top-3 left-3 z-10">
             {libro.categoria?.nombre_categoria}
           </Badge>
-          <div
-            class="aspect-[2/3] w-full rounded border border-border flex items-end p-4"
-            style={`background-color: ${placeholderBg}`}
-            role="img"
-            aria-label={`Portada de ${libro.titulo}`}
-          >
-            <span class="text-xs font-inter font-medium text-[#5C5C5C] uppercase tracking-widest">{libro.titulo}</span>
+          <div class="aspect-[2/3] w-full rounded border border-border overflow-hidden bg-[#F4F1EA]">
+            {coverSrc ? (
+              <img
+                src={coverSrc}
+                alt={`Portada de ${libro.titulo}`}
+                class="h-full w-full object-cover"
+                loading="eager"
+                decoding="async"
+              />
+            ) : (
+              <div
+                class="h-full w-full bg-[#F4F1EA]"
+                role="img"
+                aria-label={`Portada no disponible para ${libro.titulo}`}
+              ></div>
+            )}
           </div>
         </div>
       </div>

@@ -1,0 +1,41 @@
+---
+const steps = [
+  {
+    title: 'Busca por título, autor o categoría',
+    desc: 'El buscador y las rutas del catálogo llevan al usuario desde intención hasta producto sin rodeos.',
+  },
+  {
+    title: 'Confirma stock antes de comprar',
+    desc: 'La disponibilidad se muestra en tarjeta y detalle para reducir pedidos sobre productos agotados.',
+  },
+  {
+    title: 'Recibe o recoge tu pedido',
+    desc: 'La compra termina con una ruta clara hacia entrega, recojo y seguimiento desde Mi cuenta.',
+  },
+];
+---
+
+<section class="py-16 lg:py-20 bg-surface border-y border-border">
+  <div class="max-w-[1280px] mx-auto px-6">
+    <div class="grid lg:grid-cols-[1.1fr_1.9fr] gap-10 lg:gap-16 items-start">
+      <div>
+        <p class="font-inter text-xs uppercase tracking-[0.18em] text-text-muted mb-3">Compra en campaña</p>
+        <h2 class="font-playfair font-bold text-3xl lg:text-4xl text-text leading-tight">
+          Pensado para días de alta demanda.
+        </h2>
+      </div>
+
+      <div class="divide-y divide-border border-y border-border">
+        {steps.map((step, index) => (
+          <div class="grid sm:grid-cols-[80px_1fr] gap-4 py-6">
+            <span class="font-inter text-sm text-text-muted tabular-nums">{String(index + 1).padStart(2, '0')}</span>
+            <div>
+              <h3 class="font-inter font-semibold text-text text-base">{step.title}</h3>
+              <p class="font-inter text-sm text-text-muted leading-relaxed mt-2 max-w-[68ch]">{step.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
