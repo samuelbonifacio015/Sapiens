@@ -3,6 +3,11 @@ import type { Libro, Revista, CartItem } from '../types/index.js';
 
 const STORAGE_KEY = 'sapiens_cart';
 
+interface CartUpdateDetail {
+  count: number;
+  items: CartItem[];
+}
+
 function readStorage(): CartItem[] {
   if (typeof window === 'undefined') return [];
   try {
@@ -25,6 +30,24 @@ function productKey(item: CartItem): string {
     : `revista-${(item.producto as Revista).id_revista}`;
 }
 
+function getProductStock(item: CartItem | Libro | Revista): number {
+  const stock = 'producto' in item ? item.producto.stock : item.stock;
+  return Number.isFinite(stock) ? Math.max(0, stock) : 0;
+}
+
+function dispatchCartUpdate(items: CartItem[]): void {
+  if (typeof window === 'undefined') return;
+  const count = items.reduce((sum, item) => sum + item.cantidad, 0);
+  window.dispatchEvent(new CustomEvent<CartUpdateDetail>('cart-update', { detail: { count, items } }));
+}
+
+export function getCartSnapshot() {
+  const items = readStorage();
+  const total = items.reduce((sum, item) => sum + item.producto.precio * item.cantidad, 0);
+  const count = items.reduce((sum, item) => sum + item.cantidad, 0);
+  return { items, total, count };
+}
+
 export function useCart() {
   const [items, setItems] = useState<CartItem[]>([]);
 
@@ -34,14 +57,19 @@ export function useCart() {
     const onStorage = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY) setItems(readStorage());
     };
+    const onCartUpdate = () => setItems(readStorage());
     window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    window.addEventListener('cart-update', onCartUpdate);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('cart-update', onCartUpdate);
+    };
   }, []);
 
   const syncedSet = useCallback((next: CartItem[]) => {
     setItems(next);
     writeStorage(next);
-    window.dispatchEvent(new Event('cart-update'));
+    dispatchCartUpdate(next);
   }, []);
 
   const addToCart = useCallback(
@@ -51,11 +79,16 @@ export function useCart() {
           ? `libro-${(producto as Libro).id_libro}`
           : `revista-${(producto as Revista).id_revista}`;
         const existing = prev.find(i => productKey(i) === key);
+        const stock = getProductStock(producto);
+        if (stock < 1) return prev;
+        const safeQty = Math.max(1, qty);
+        const currentQty = existing?.cantidad ?? 0;
+        const nextQty = Math.min(stock, currentQty + safeQty);
         const next = existing
-          ? prev.map(i => productKey(i) === key ? { ...i, cantidad: i.cantidad + qty } : i)
-          : [...prev, { producto, tipo, cantidad: qty }];
+          ? prev.map(i => productKey(i) === key ? { ...i, cantidad: nextQty, producto } : i)
+          : [...prev, { producto, tipo, cantidad: Math.min(stock, safeQty) }];
         writeStorage(next);
-        window.dispatchEvent(new Event('cart-update'));
+        dispatchCartUpdate(next);
         return next;
       });
     },
@@ -67,7 +100,7 @@ export function useCart() {
       setItems(prev => {
         const next = prev.filter(i => productKey(i) !== key);
         writeStorage(next);
-        window.dispatchEvent(new Event('cart-update'));
+        dispatchCartUpdate(next);
         return next;
       });
     },
@@ -76,11 +109,14 @@ export function useCart() {
 
   const updateQty = useCallback(
     (key: string, cantidad: number) => {
-      if (cantidad < 1) return;
       setItems(prev => {
-        const next = prev.map(i => productKey(i) === key ? { ...i, cantidad } : i);
+        const next = prev.map(i => {
+          if (productKey(i) !== key) return i;
+          const stock = getProductStock(i);
+          return { ...i, cantidad: Math.min(stock, Math.max(1, cantidad)) };
+        });
         writeStorage(next);
-        window.dispatchEvent(new Event('cart-update'));
+        dispatchCartUpdate(next);
         return next;
       });
     },

@@ -4,7 +4,7 @@ import CartItemComponent from './CartItem.js';
 import CartSummary from './CartSummary.js';
 
 export default function CartPage() {
-  const { items, total, removeFromCart, updateQty, productKey } = useCart();
+  const { items, total, count, removeFromCart, updateQty, productKey } = useCart();
 
   if (items.length === 0) {
     return (
@@ -28,7 +28,7 @@ export default function CartPage() {
       {/* Items list */}
       <div>
         <h2 className="font-playfair font-bold text-2xl text-text mb-6">
-          Tu carrito <span className="font-inter text-base text-text-muted font-normal">({items.length} {items.length === 1 ? 'producto' : 'productos'})</span>
+          Tu carrito <span className="font-inter text-base text-text-muted font-normal">({count} {count === 1 ? 'producto' : 'productos'})</span>
         </h2>
         <div>
           {items.map(item => (

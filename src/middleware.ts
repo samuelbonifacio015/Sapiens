@@ -17,7 +17,7 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
     if (ctx.locals.user.rol !== 'ADMIN') return ctx.redirect('/mi-cuenta');
   }
 
-  if ((path === '/mi-cuenta' || path.startsWith('/mi-cuenta/') || path === '/checkout') && !ctx.locals.user) {
+  if ((path === '/mi-cuenta' || path.startsWith('/mi-cuenta/') || path === '/carrito' || path === '/checkout') && !ctx.locals.user) {
     return ctx.redirect(loginUrl);
   }
 

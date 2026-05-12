@@ -1,4 +1,6 @@
 ---
+import HeaderCart from '../cart/HeaderCart';
+
 const navLinks = [
   { href: '/catalogo', label: 'Catálogo' },
   { href: '/catalogo/libros', label: 'Libros' },
@@ -10,6 +12,8 @@ const navLinks = [
 
 const currentPath = Astro.url.pathname;
 const user = Astro.locals.user;
+const isAuthenticated = Boolean(user);
+const cartLoginHref = `/iniciar-sesion?next=${encodeURIComponent('/carrito')}`;
 ---
 
 <header class="sticky top-0 z-50 bg-surface border-b border-border">
@@ -42,21 +46,8 @@ const user = Astro.locals.user;
 
     <!-- Actions -->
     <div class="flex items-center gap-4">
-      <!-- Cart -->
-      <a
-        href="/carrito"
-        class="relative flex items-center justify-center w-10 h-10 text-text hover:text-text-muted transition-colors"
-        aria-label="Ver carrito de compras"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
-        </svg>
-        <span
-          id="cart-badge"
-          class="absolute -top-1 -right-1 w-4 h-4 bg-[#0D0D0D] text-accent text-[10px] font-bold font-inter flex items-center justify-center rounded-full hidden"
-          aria-label="items en carrito"
-        >0</span>
-      </a>
+      <!-- Cart: HeaderCart listens for cart-update through useCart. -->
+      <HeaderCart isAuthenticated={isAuthenticated} loginHref={cartLoginHref} client:load />
 
       <!-- Theme toggle -->
       <button

@@ -1,38 +1,22 @@
 <claude-mem-context>
 # Memory Context
 
-# [Sapiens] recent context, 2026-05-12 4:34pm GMT-5
+# [Sapiens] recent context, 2026-05-12 5:06pm GMT-5
 
 Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision 🚨security_alert 🔐security_note
 Format: ID TIME TYPE TITLE
 Fetch details: get_observations([IDs]) | Search: mem-search skill
 
-Stats: 50 obs (15.709t read) | 1.349.615t work | 99% savings
+Stats: 50 obs (17.813t read) | 1.414.597t work | 99% savings
 
 ### May 12, 2026
-127 10:13a ✅ ProductCard button colors updated to use design tokens
-128 " ✅ ProductCard hover border updated to use design token
-129 " ✅ Campaign banner updated to use design tokens
-130 " ✅ MagneticCTA button colors updated to use design tokens
-131 10:14a 🟣 FeaturedCarousel component created with infinite loop animation
-132 " ✅ FeaturedCarousel component imported to homepage
-133 " ✅ Featured books section replaced with carousel component
-134 10:15a 🔄 Categories page refactored from flat grid to editorial layout
-135 " ✅ CategoryGrid hover border updated to use primary token
-136 10:16a 🔄 FeaturedCarousel refactored with frame-based animation
-137 " 🔴 Fixed variable naming in FeaturedCarousel
-138 10:17a 🔵 Build verification successful after all changes
-139 10:20a ✅ FeaturedCarousel animation optimized for seamless looping
-140 " 🔵 Build verification successful after animation optimization
 S35 Activate Caveman and assess statusline setup configuration needs (May 12, 10:20 AM)
 S36 Status check on Ultra system activation (May 12, 10:27 AM)
 S37 Add new Peruvian literature collection to database seed file (8 authors, 9 books) (May 12, 10:27 AM)
-141 10:37a 🟣 Added Peruvian literature collection to database seed
 S38 Verify whether newly seeded books will appear in the application automatically (SSR behavior confirmation) (May 12, 10:37 AM)
 S39 Debug why executed query results aren't displaying in frontend - possibly due to missing ISBN data or other issues (May 12, 10:40 AM)
 S40 Debug and fix query results not displaying in frontend - discovered database schema mismatch and implemented fix (May 12, 10:44 AM)
-142 10:46a 🟣 ProductCard: Add book cover images and remove placeholder coloring system
-143 " ✅ Database connection updated to use railway schema
+143 10:46a ✅ Database connection updated to use railway schema
 S41 Diagnose and fix query results not displaying in frontend - identified root cause as improper database initialization (May 12, 10:46 AM)
 144 " 🟣 Book cover images successfully rendering in product catalog
 145 10:47a 🟣 ProductCard: Verification complete — duplicate titles removed, images in place
@@ -70,6 +54,22 @@ S44 Resolve dev server still referencing old database configuration despite .env
 178 4:28p 🔴 Admin page missing Tailwind CSS import
 179 " ✅ Test assertion added for Tailwind CSS import in AdminLayout
 180 4:29p 🟣 Admin styles fix verified and deployed to main branch
+181 4:34p 🔵 Magazine image assets identified in public directory
+182 " 🔵 Magazines fully integrated into Sapiens data model and UI
+183 4:35p 🔵 Magazine cover images not mapped in UI components
+184 4:36p 🟣 Magazine cover images implemented across UI components
+185 " 🟣 Magazine covers feature completed and build verified
+186 4:37p 🔵 Magazine covers rendering successfully in browser
+187 4:45p 🔵 FilterSidebar callback not integrated with product display
+188 4:47p 🔴 Implemented product filtering end-to-end across catalog pages
+189 " ⚖️ Cart authentication model selected: login-required before adding items
+190 4:48p 🔴 Product filtering integrated across catalog pages with URL-driven state
+191 " ⚖️ Checkout data scope selected: use existing client profile with optional field updates
+194 " ⚖️ Cart implementation approach selected: complete existing flow with auth gates
+199 4:51p 🔵 Type filtering works end-to-end; category checkbox filter fails to trigger state change
+200 4:55p 🟣 Product filtering system with URL state management implemented and verified
+201 " 🟣 Catalog filter utility library with URL parsing and filtering logic
+202 " 🔵 All catalog filter tests passing with valid input and edge case handling
 
-Access 1350k tokens of past work via get_observations([IDs]) or mem-search skill.
+Access 1415k tokens of past work via get_observations([IDs]) or mem-search skill.
 </claude-mem-context>

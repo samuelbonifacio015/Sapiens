@@ -18,6 +18,7 @@ export default function CartItem({ item, itemKey, onRemove, onUpdateQty }: CartI
     : getMagazineCoverSrc(item.producto as Revista);
   const subtotal = item.producto.precio * item.cantidad;
   const autorName = isLibro ? (item.producto as Libro).autor?.nombre_autor : null;
+  const stock = Math.max(0, item.producto.stock ?? 0);
 
   return (
     <div className="flex gap-4 py-5 border-b border-border last:border-0">
@@ -61,8 +62,9 @@ export default function CartItem({ item, itemKey, onRemove, onUpdateQty }: CartI
             <button
               type="button"
               onClick={() => onUpdateQty(itemKey, item.cantidad + 1)}
+              disabled={item.cantidad >= stock}
               aria-label="Aumentar cantidad"
-              className="w-8 h-8 flex items-center justify-center text-text hover:bg-bg transition-colors font-inter"
+              className="w-8 h-8 flex items-center justify-center text-text hover:bg-bg transition-colors disabled:opacity-40 font-inter"
             >
               +
             </button>

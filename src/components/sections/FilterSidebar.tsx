@@ -1,12 +1,8 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
+import { defaultCatalogFilters, type CatalogFilters } from '../../lib/catalog-filters';
 
-interface FilterState {
-  tipo: 'todos' | 'libros' | 'revistas';
-  categorias: number[];
-  soloConStock: boolean;
-  ordenarPor: 'relevancia' | 'precio-asc' | 'precio-desc' | 'titulo-az';
-}
+type FilterState = CatalogFilters;
 
 interface Categoria {
   id_categoria: number;
@@ -20,21 +16,59 @@ interface FilterSidebarProps {
   className?: string;
 }
 
-const defaultFilters: FilterState = {
-  tipo: 'todos',
-  categorias: [],
-  soloConStock: false,
-  ordenarPor: 'relevancia',
+const defaultFilters: FilterState = defaultCatalogFilters;
+
+const readFiltersFromUrl = (): FilterState => {
+  if (typeof window === 'undefined') return defaultFilters;
+
+  const params = new URLSearchParams(window.location.search);
+  const tipo = params.get('tipo') as FilterState['tipo'] | null;
+  const ordenarPor = params.get('orden') as FilterState['ordenarPor'] | null;
+  const categorias = params
+    .getAll('categoria')
+    .flatMap(value => value.split(','))
+    .map(value => Number(value))
+    .filter(value => Number.isInteger(value) && value > 0);
+
+  return {
+    tipo: tipo && ['todos', 'libros', 'revistas'].includes(tipo) ? tipo : defaultFilters.tipo,
+    categorias: [...new Set(categorias)],
+    soloConStock: params.get('stock') === '1',
+    ordenarPor: ordenarPor && ['relevancia', 'precio-asc', 'precio-desc', 'titulo-az'].includes(ordenarPor)
+      ? ordenarPor
+      : defaultFilters.ordenarPor,
+  };
+};
+
+const writeFiltersToUrl = (filters: FilterState) => {
+  const url = new URL(window.location.href);
+  url.searchParams.delete('tipo');
+  url.searchParams.delete('categoria');
+  url.searchParams.delete('stock');
+  url.searchParams.delete('orden');
+
+  if (filters.tipo !== defaultFilters.tipo) url.searchParams.set('tipo', filters.tipo);
+  for (const categoria of filters.categorias) {
+    url.searchParams.append('categoria', String(categoria));
+  }
+  if (filters.soloConStock) url.searchParams.set('stock', '1');
+  if (filters.ordenarPor !== defaultFilters.ordenarPor) url.searchParams.set('orden', filters.ordenarPor);
+
+  window.location.assign(url.toString());
 };
 
 export default function FilterSidebar({ categorias, onFilterChange, className = '' }: FilterSidebarProps) {
-  const [filters, setFilters] = useState<FilterState>(defaultFilters);
+  const [filters, setFilters] = useState<FilterState>(() => readFiltersFromUrl());
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const update = (patch: Partial<FilterState>) => {
     const next = { ...filters, ...patch };
     setFilters(next);
-    onFilterChange?.(next);
+    if (onFilterChange) {
+      onFilterChange(next);
+      return;
+    }
+    writeFiltersToUrl(next);
   };
 
   const toggleCategoria = (id: number) => {
@@ -46,7 +80,11 @@ export default function FilterSidebar({ categorias, onFilterChange, className = 
 
   const clearFilters = () => {
     setFilters(defaultFilters);
-    onFilterChange?.(defaultFilters);
+    if (onFilterChange) {
+      onFilterChange(defaultFilters);
+      return;
+    }
+    writeFiltersToUrl(defaultFilters);
   };
 
   const hasFilters =
@@ -89,6 +127,7 @@ export default function FilterSidebar({ categorias, onFilterChange, className = 
             <label key={cat.id_categoria} className="flex items-center gap-2.5 cursor-pointer">
               <input
                 type="checkbox"
+                value={cat.id_categoria}
                 checked={filters.categorias.includes(cat.id_categoria)}
                 onChange={() => toggleCategoria(cat.id_categoria)}
                 className="accent-[#0D0D0D] rounded"
