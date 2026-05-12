@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import AuthForm from '../components/auth/AuthForm';
+
+const next = Astro.url.searchParams.get('next') ?? undefined;
+const safeNext = next?.startsWith('/') && !next.startsWith('//') ? next : undefined;
+
+if (Astro.locals.user?.rol === 'ADMIN') {
+  return Astro.redirect('/admin');
+}
+
+if (Astro.locals.user?.rol === 'USER') {
+  return Astro.redirect(safeNext ?? '/mi-cuenta');
+}
+---
+
+<BaseLayout title="Iniciar sesion - Sapiens" description="Accede a tu cuenta de cliente Sapiens.">
+  <Header />
+  <main class="min-h-[calc(100vh-8rem)] px-6 py-12">
+    <div class="mx-auto flex max-w-[1280px] justify-center">
+      <AuthForm mode="login" next={safeNext} client:load />
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
