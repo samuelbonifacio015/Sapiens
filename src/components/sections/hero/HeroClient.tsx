@@ -44,7 +44,7 @@ export default function HeroClient() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.55 }}
           >
-            Más de 2,000 títulos. Envíos a Lima y provincias.
+            Tu proveedor de confianza. Promoviendo la lectura en Lima, Perú.
           </motion.p>
 
           <motion.div

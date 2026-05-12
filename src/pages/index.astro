@@ -14,7 +14,7 @@ import { getRevistas } from '../lib/db/queries/revistas';
 
 const libros = await getLibros();
 const revistas = await getRevistas();
-const featuredBooks = libros.slice(0, 4).map(l => ({ producto: l as Libro, tipo: 'libro' as const }));
+const featuredBooks = libros.map(l => ({ producto: l as Libro, tipo: 'libro' as const }));
 const featuredMagazines = revistas.slice(0, 4).map(r => ({ producto: r as Revista, tipo: 'revista' as const }));
 
 const campaignActive = true;

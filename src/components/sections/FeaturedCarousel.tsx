@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { motion, useMotionValue, useAnimationFrame, useReducedMotion } from 'framer-motion';
 import type { Libro, Revista } from '../../types/index.js';
+import { getBookCoverSrc } from '../../lib/book-covers.js';
 
 interface CarouselItem {
   producto: Libro | Revista;
@@ -15,27 +16,30 @@ interface Props {
   viewAllLabel: string;
 }
 
-const placeholderColors = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0', '#E8E8D5'];
-
 function ProductCardMini({ producto, tipo }: CarouselItem) {
   const isLibro = tipo === 'libro';
   const libro = isLibro ? (producto as Libro) : null;
   const revista = !isLibro ? (producto as Revista) : null;
   const href = isLibro ? `/libros/${libro!.id_libro}` : `/revistas/${revista!.id_revista}`;
-  const colorIndex = ((producto as Libro).id_libro ?? (producto as Revista).id_revista ?? 0) % placeholderColors.length;
-  const placeholderBg = placeholderColors[colorIndex];
   const autorName = libro?.autor?.nombre_autor ?? '';
   const frecuencia = revista?.frecuencia ?? '';
+  const coverSrc = libro ? getBookCoverSrc(libro) : '';
 
   return (
     <article className="group flex flex-col bg-surface border border-border rounded overflow-hidden hover:border-primary transition-colors duration-150 w-44 sm:w-52 flex-shrink-0">
       <a href={href} className="block relative overflow-hidden" aria-label={`Ver detalle de ${producto.titulo}`}>
-        <div className="aspect-[2/3] w-full relative overflow-hidden" style={{ backgroundColor: placeholderBg }}>
-          <div className="absolute inset-0 flex items-end p-3">
-            <span className="text-[10px] font-inter font-medium text-text-muted uppercase tracking-widest line-clamp-2">
-              {producto.titulo}
-            </span>
-          </div>
+        <div className="aspect-[2/3] w-full relative overflow-hidden bg-[#F4F1EA]">
+          {coverSrc ? (
+            <img
+              src={coverSrc}
+              alt={`Portada de ${producto.titulo}`}
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            />
+          ) : (
+            <div className="h-full w-full bg-[#F4F1EA]" />
+          )}
         </div>
       </a>
       <div className="flex flex-col gap-1.5 p-3 flex-1">
