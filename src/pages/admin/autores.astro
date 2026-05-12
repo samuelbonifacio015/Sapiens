@@ -1,7 +1,9 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
-import { autores } from '../../lib/mocks/autores.js';
-import { libros } from '../../lib/mocks/libros.js';
+import { getAutores } from '../../lib/db/queries/autores';
+import { getLibros } from '../../lib/db/queries/libros';
+
+const [autores, libros] = await Promise.all([getAutores(), getLibros()]);
 ---
 
 <AdminLayout title="Autores — Admin Sapiens">

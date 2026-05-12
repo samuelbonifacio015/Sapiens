@@ -1,8 +1,10 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
-import { categorias } from '../../lib/mocks/categorias.js';
-import { libros } from '../../lib/mocks/libros.js';
-import { revistas } from '../../lib/mocks/revistas.js';
+import { getCategorias } from '../../lib/db/queries/categorias';
+import { getLibros } from '../../lib/db/queries/libros';
+import { getRevistas } from '../../lib/db/queries/revistas';
+
+const [categorias, libros, revistas] = await Promise.all([getCategorias(), getLibros(), getRevistas()]);
 
 const categoriasWithCount = categorias.map(cat => ({
   ...cat,

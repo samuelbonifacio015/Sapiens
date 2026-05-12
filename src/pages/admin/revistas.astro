@@ -1,6 +1,7 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
-import { revistas } from '../../lib/mocks/revistas.js';
+import { getRevistas } from '../../lib/db/queries/revistas';
+const revistas = await getRevistas();
 ---
 
 <AdminLayout title="Revistas — Admin Sapiens">

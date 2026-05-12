@@ -1,7 +1,9 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
-import { pedidos } from '../../lib/mocks/pedidos.js';
-import { libros } from '../../lib/mocks/libros.js';
+import { getPedidos } from '../../lib/db/queries/pedidos';
+import { getLibros } from '../../lib/db/queries/libros';
+
+const [pedidos, libros] = await Promise.all([getPedidos(), getLibros()]);
 
 const ingresosTotales = pedidos.filter(p => p.estado !== 'cancelado').reduce((s, p) => s + p.total, 0);
 const ticketPromedio = ingresosTotales / Math.max(pedidos.filter(p => p.estado !== 'cancelado').length, 1);

@@ -1,11 +1,8 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
-import { pedidos } from '../../lib/mocks/pedidos.js';
+import { getClientes } from '../../lib/db/queries/pedidos';
 
-const clientes = pedidos
-  .map(p => p.cliente)
-  .filter(Boolean)
-  .filter((c, i, arr) => arr.findIndex(x => x?.id_cliente === c?.id_cliente) === i);
+const clientes = await getClientes();
 ---
 
 <AdminLayout title="Clientes — Admin Sapiens">

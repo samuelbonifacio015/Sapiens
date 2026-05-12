@@ -1,10 +1,11 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
-import { libros } from '../../lib/mocks/libros.js';
-import { revistas } from '../../lib/mocks/revistas.js';
-import { categorias } from '../../lib/mocks/categorias.js';
+import { getLibros } from '../../lib/db/queries/libros';
+import { getRevistas } from '../../lib/db/queries/revistas';
 
 const MIN_STOCK = 5;
+
+const [libros, revistas] = await Promise.all([getLibros(), getRevistas()]);
 
 const allItems = [
   ...libros.map(l => ({

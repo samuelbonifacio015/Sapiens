@@ -1,6 +1,8 @@
 ---
 import AdminLayout from '../../../components/layout/AdminLayout.astro';
-import { pedidos } from '../../../lib/mocks/pedidos.js';
+import { getPedidos } from '../../../lib/db/queries/pedidos';
+
+const pedidos = await getPedidos();
 
 const estadoColor: Record<string, string> = {
   pendiente: 'bg-warning/10 text-warning',

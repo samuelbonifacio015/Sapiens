@@ -1,7 +1,9 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
-import { libros } from '../../lib/mocks/libros.js';
-import { revistas } from '../../lib/mocks/revistas.js';
+import { getLibros } from '../../lib/db/queries/libros';
+import { getRevistas } from '../../lib/db/queries/revistas';
+
+const [libros, revistas] = await Promise.all([getLibros(), getRevistas()]);
 ---
 
 <AdminLayout title="Catálogo — Admin Sapiens">

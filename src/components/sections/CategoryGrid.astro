@@ -1,5 +1,7 @@
 ---
-import { categorias } from '../../lib/mocks/categorias.js';
+import { getCategorias } from '../../lib/db/queries/categorias';
+
+const categorias = await getCategorias();
 
 const categoryIcons: Record<string, string> = {
   'Literatura Peruana': '🇵🇪',

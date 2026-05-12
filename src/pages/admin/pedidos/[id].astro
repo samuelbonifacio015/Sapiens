@@ -1,17 +1,12 @@
 ---
 import AdminLayout from '../../../components/layout/AdminLayout.astro';
-import { pedidos } from '../../../lib/mocks/pedidos.js';
-import { libros } from '../../../lib/mocks/libros.js';
-import { revistas } from '../../../lib/mocks/revistas.js';
+import { getPedidoById } from '../../../lib/db/queries/pedidos';
+import { getLibros } from '../../../lib/db/queries/libros';
+import { getRevistas } from '../../../lib/db/queries/revistas';
 
-export function getStaticPaths() {
-  return pedidos.map(p => ({
-    params: { id: String(p.id_pedido) },
-    props: { pedido: p },
-  }));
-}
-
-const { pedido } = Astro.props;
+const id = Number(Astro.params.id);
+const [pedido, libros, revistas] = await Promise.all([getPedidoById(id), getLibros(), getRevistas()]);
+if (!pedido) return Astro.redirect('/admin/pedidos');
 
 const estadoColor: Record<string, string> = {
   pendiente: 'bg-warning text-[#0D0D0D]',
