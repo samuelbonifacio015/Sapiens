@@ -22,7 +22,7 @@ const categorySlug = (name: string) =>
       {categorias.map(cat => (
         <a
           href={`/categorias/${categorySlug(cat.nombre_categoria)}`}
-          class="flex flex-col items-center gap-3 p-6 bg-surface border border-border rounded hover:border-accent transition-colors duration-150 text-center group"
+          class="flex flex-col items-center gap-3 p-6 bg-surface border border-border rounded hover:border-primary transition-colors duration-150 text-center group"
           aria-label={`Ver libros de ${cat.nombre_categoria}`}
         >
           <span class="text-4xl" aria-hidden="true">{categoryIcons[cat.nombre_categoria] ?? '📚'}</span>

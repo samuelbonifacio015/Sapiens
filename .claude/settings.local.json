@@ -8,7 +8,8 @@
       "Bash(npx claude-mem *)",
       "Bash(env)",
       "Bash(python -c ' *)",
-      "Bash(python *)"
+      "Bash(python *)",
+      "Bash(npm run *)"
     ]
   }
 }

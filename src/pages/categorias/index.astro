@@ -11,38 +11,224 @@ const [categorias, libros, revistas] = await Promise.all([getCategorias(), getLi
 const categorySlug = (name: string) =>
   name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
 
-const categoryIcons: Record<string, string> = {
-  'Literatura Peruana': '🇵🇪',
-  'Literatura Internacional': '🌍',
-  'Ciencias y Tecnología': '🔬',
-  'Revistas de Actualidad': '📰',
-  'Infantil y Juvenil': '🌟',
+const placeholderColors = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0', '#E8E8D5'];
+
+const categoryMeta: Record<string, { description: string; accentColor: string; editorial?: string }> = {
+  'Literatura Peruana': {
+    description: 'Voces que nacen del Ande, la costa y la selva. Narrativa, poesía y ensayo de autores peruanos contemporáneos y clásicos.',
+    accentColor: '#E8D5D5',
+    editorial: 'Voces peruanas',
+  },
+  'Literatura Internacional': {
+    description: 'Desde Borges hasta Murakami. Las grandes obras de la narrativa mundial en ediciones cuidadas.',
+    accentColor: '#D5DDE8',
+    editorial: 'Mirada global',
+  },
+  'Ciencias y Tecnología': {
+    description: 'Pensamiento científico y tecnológico para mentes curiosas. Divulgación de alto nivel en castellano.',
+    accentColor: '#D5E8E0',
+    editorial: 'Saber profundo',
+  },
+  'Revistas de Actualidad': {
+    description: 'Análisis, tendencias y crónica. Las publicaciones periódicas más relevantes del mundo hispanohablante.',
+    accentColor: '#E8E8D5',
+    editorial: 'Actualidad crítica',
+  },
+  'Infantil y Juvenil': {
+    description: 'Libros que forman lectores de por vida. Selección curada para todas las edades y todos los mundos imaginarios.',
+    accentColor: '#E8D5E8',
+    editorial: 'Para los más jóvenes',
+  },
 };
 
-const categoriasWithCount = categorias.map(cat => ({
-  ...cat,
-  count: libros.filter(l => l.id_categoria === cat.id_categoria).length +
-         revistas.filter(r => r.id_categoria === cat.id_categoria).length,
-}));
+const categoriasWithData = categorias.map((cat, i) => {
+  const librosDeCategoria = libros.filter(l => l.id_categoria === cat.id_categoria);
+  const revistasDeCategoria = revistas.filter(r => r.id_categoria === cat.id_categoria);
+  const count = librosDeCategoria.length + revistasDeCategoria.length;
+  const covers = librosDeCategoria.slice(0, 3).map((l, j) => ({
+    titulo: l.titulo,
+    bg: placeholderColors[(l.id_libro ?? 0) % placeholderColors.length],
+  }));
+  const meta = categoryMeta[cat.nombre_categoria] ?? {
+    description: 'Explora nuestra selección de títulos en esta categoría.',
+    accentColor: placeholderColors[i % placeholderColors.length],
+  };
+  return { ...cat, count, covers, meta, slug: categorySlug(cat.nombre_categoria) };
+});
+
+const [featured, ...rest] = categoriasWithData;
+
+const editorialStrip = categoriasWithData
+  .filter(c => c.meta.editorial)
+  .slice(0, 3)
+  .map(c => ({ label: c.meta.editorial!, description: c.meta.description, href: `/categorias/${c.slug}` }));
 ---
 
 <BaseLayout title="Categorías — Sapiens">
   <Header />
-  <main class="max-w-[1280px] mx-auto px-6 py-10">
-    <h1 class="font-playfair font-bold text-4xl text-text mb-8">Categorías</h1>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-      {categoriasWithCount.map(cat => (
-        <a
-          href={`/categorias/${categorySlug(cat.nombre_categoria)}`}
-          class="flex flex-col items-center gap-3 p-8 bg-surface border border-border rounded hover:border-[#0D0D0D] transition-colors duration-150 text-center group"
-          aria-label={`Ver ${cat.nombre_categoria} — ${cat.count} productos`}
-        >
-          <span class="text-5xl" aria-hidden="true">{categoryIcons[cat.nombre_categoria] ?? '📚'}</span>
-          <h2 class="font-inter text-sm font-medium text-text leading-tight">{cat.nombre_categoria}</h2>
-          <p class="font-inter text-xs text-text-muted">{cat.count} productos</p>
-        </a>
-      ))}
-    </div>
+  <main>
+
+    <!-- Header editorial -->
+    <section class="pt-16 pb-10 bg-bg border-b border-border">
+      <div class="max-w-[1280px] mx-auto px-6">
+        <p class="font-inter text-xs text-text-muted tracking-widest uppercase mb-4">Sapiens / Categorías</p>
+        <div class="relative inline-block">
+          <h1 class="font-playfair font-bold text-5xl lg:text-6xl text-text leading-[1.05] tracking-tight">
+            Explora<br />por mundo.
+          </h1>
+          <span
+            class="absolute left-0 h-[3px] bg-accent rounded-full"
+            style="bottom: -6px; width: 100%;"
+            aria-hidden="true"
+          ></span>
+        </div>
+        <p class="font-inter text-text-muted text-lg mt-8 max-w-[52ch] leading-relaxed">
+          Cada categoría es una forma distinta de leer el mundo. Elige la tuya.
+        </p>
+      </div>
+    </section>
+
+    {/* Featured category — hero card */}
+    {featured && (
+      <section class="py-12 bg-bg">
+        <div class="max-w-[1280px] mx-auto px-6">
+          <a
+            href={`/categorias/${featured.slug}`}
+            class="group grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 p-8 lg:p-12 bg-surface border border-border rounded hover:border-primary transition-colors duration-200"
+            aria-label={`Ver ${featured.nombre_categoria} — ${featured.count} productos`}
+          >
+            <div class="flex flex-col justify-between gap-6">
+              <div>
+                <p class="font-inter text-xs text-text-muted tracking-widest uppercase mb-3">
+                  {featured.meta.editorial ?? 'Destacado'}
+                </p>
+                <h2 class="font-playfair font-bold text-4xl lg:text-5xl text-text leading-tight group-hover:underline decoration-accent underline-offset-4">
+                  {featured.nombre_categoria}
+                </h2>
+                <p class="font-inter text-text-muted text-base mt-4 max-w-[50ch] leading-relaxed">
+                  {featured.meta.description}
+                </p>
+              </div>
+              <div class="flex items-center gap-4">
+                <span class="font-inter text-sm font-medium text-text">
+                  {featured.count} {featured.count === 1 ? 'título' : 'títulos'}
+                </span>
+                <span class="inline-flex items-center gap-1.5 font-inter text-sm font-medium text-accent">
+                  Explorar
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                  </svg>
+                </span>
+              </div>
+            </div>
+
+            {/* Mini cover stack */}
+            <div class="hidden lg:flex items-center justify-end gap-[-8px]">
+              <div class="flex items-end gap-2">
+                {featured.covers.length > 0 ? featured.covers.map((cover, i) => (
+                  <div
+                    class="rounded overflow-hidden border border-border flex-shrink-0"
+                    style={`width: ${56 + i * 8}px; height: ${84 + i * 12}px; background-color: ${cover.bg}; transform: rotate(${(i - 1) * 3}deg);`}
+                    aria-hidden="true"
+                  >
+                    <div class="w-full h-full flex items-end p-2">
+                      <span class="text-[8px] font-inter font-medium text-[#5C5C5C] uppercase tracking-widest line-clamp-2 leading-tight">
+                        {cover.titulo}
+                      </span>
+                    </div>
+                  </div>
+                )) : (
+                  <div
+                    class="rounded overflow-hidden border border-border"
+                    style={`width: 72px; height: 108px; background-color: ${featured.meta.accentColor};`}
+                    aria-hidden="true"
+                  ></div>
+                )}
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
+    )}
+
+    {/* Asymmetric mosaic */}
+    {rest.length > 0 && (
+      <section class="pb-12 bg-bg">
+        <div class="max-w-[1280px] mx-auto px-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4">
+            {rest.map((cat, i) => {
+              const colSpan = i === 0 ? 'lg:col-span-6' : i === 1 ? 'lg:col-span-3' : 'lg:col-span-3';
+              return (
+                <a
+                  href={`/categorias/${cat.slug}`}
+                  class={`group relative flex flex-col justify-between p-6 lg:p-8 rounded border border-border hover:border-primary transition-all duration-200 min-h-[200px] overflow-hidden ${colSpan}`}
+                  style={`background-color: ${cat.meta.accentColor};`}
+                  aria-label={`Ver ${cat.nombre_categoria} — ${cat.count} productos`}
+                >
+                  <div>
+                    <h2 class="font-playfair font-bold text-2xl lg:text-3xl text-[#0D0D0D] leading-tight relative inline-block">
+                      {cat.nombre_categoria}
+                      <span
+                        class="absolute left-0 h-[2px] bg-[#D4FF00] rounded-full transition-all duration-200 w-0 group-hover:w-full"
+                        style="bottom: -3px;"
+                        aria-hidden="true"
+                      ></span>
+                    </h2>
+                    {cat.meta.editorial && (
+                      <p class="font-inter text-[10px] text-[#5C5C5C] tracking-widest uppercase mt-2">
+                        {cat.meta.editorial}
+                      </p>
+                    )}
+                  </div>
+                  <div class="flex items-end justify-between mt-4">
+                    <span class="font-inter text-sm font-medium text-[#0D0D0D]">
+                      {cat.count} {cat.count === 1 ? 'título' : 'títulos'}
+                    </span>
+                    {cat.covers.length > 0 && (
+                      <div class="flex items-end gap-1" aria-hidden="true">
+                        {cat.covers.slice(0, 2).map((cover, j) => (
+                          <div
+                            class="rounded border border-black/10 flex-shrink-0"
+                            style={`width: 32px; height: 48px; background-color: ${cover.bg}; transform: rotate(${j === 0 ? '-4deg' : '2deg'});`}
+                          ></div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    )}
+
+    {/* Editorial strip */}
+    {editorialStrip.length > 0 && (
+      <section class="py-16 bg-surface border-t border-border">
+        <div class="max-w-[1280px] mx-auto px-6">
+          <h2 class="font-playfair font-bold text-2xl text-text mb-10">Por qué leer en Sapiens</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+            {editorialStrip.map(item => (
+              <a href={item.href} class="group flex flex-col gap-3">
+                <p class="font-inter text-xs text-text-muted tracking-widest uppercase">Colección</p>
+                <h3 class="font-playfair font-bold text-xl text-text group-hover:underline decoration-accent underline-offset-4 transition-none">
+                  {item.label}
+                </h3>
+                <p class="font-inter text-text-muted text-sm leading-relaxed">{item.description}</p>
+                <span class="font-inter text-sm font-medium text-text mt-auto inline-flex items-center gap-1.5">
+                  Ver categoría
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                  </svg>
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
   </main>
   <Footer />
 </BaseLayout>

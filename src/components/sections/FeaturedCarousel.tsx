@@ -1,5 +1,5 @@
-import { useRef } from 'react';
-import { motion, useAnimationControls } from 'framer-motion';
+import { useRef, useState } from 'react';
+import { motion, useMotionValue, useAnimationFrame, useReducedMotion } from 'framer-motion';
 import type { Libro, Revista } from '../../types/index.js';
 
 interface CarouselItem {
@@ -30,12 +30,9 @@ function ProductCardMini({ producto, tipo }: CarouselItem) {
   return (
     <article className="group flex flex-col bg-surface border border-border rounded overflow-hidden hover:border-primary transition-colors duration-150 w-44 sm:w-52 flex-shrink-0">
       <a href={href} className="block relative overflow-hidden" aria-label={`Ver detalle de ${producto.titulo}`}>
-        <div
-          className="aspect-[2/3] w-full relative overflow-hidden"
-          style={{ backgroundColor: placeholderBg }}
-        >
+        <div className="aspect-[2/3] w-full relative overflow-hidden" style={{ backgroundColor: placeholderBg }}>
           <div className="absolute inset-0 flex items-end p-3">
-            <span className="text-[10px] font-inter font-medium text-[#5C5C5C] uppercase tracking-widest line-clamp-2">
+            <span className="text-[10px] font-inter font-medium text-text-muted uppercase tracking-widest line-clamp-2">
               {producto.titulo}
             </span>
           </div>
@@ -55,22 +52,43 @@ function ProductCardMini({ producto, tipo }: CarouselItem) {
   );
 }
 
-export default function FeaturedCarousel({ items, title, subtitle, viewAllHref, viewAllLabel }: Props) {
-  const controls = useAnimationControls();
-  const prefersReduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function InfiniteTrack({ items }: { items: CarouselItem[] }) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const [paused, setPaused] = useState(false);
+  const SPEED = 40; // px/s
+
+  useAnimationFrame((_, delta) => {
+    if (paused || !trackRef.current) return;
+    const halfWidth = trackRef.current.scrollWidth / 2;
+    if (halfWidth === 0) return;
+    const next = x.get() - (SPEED * delta) / 1000;
+    x.set(next <= -halfWidth ? 0 : next);
+  });
 
   const track = [...items, ...items];
-  const duration = items.length * 8;
 
-  const startAnimation = () => {
-    if (prefersReduced) return;
-    controls.start({
-      x: ['-0%', '-50%'],
-      transition: { duration, ease: 'linear', repeat: Infinity, repeatType: 'loop' },
-    });
-  };
+  return (
+    <div
+      className="relative overflow-hidden"
+      style={{
+        maskImage: 'linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)',
+        WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)',
+      }}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <motion.div ref={trackRef} className="flex gap-4 px-6 w-max" style={{ x }}>
+        {track.map((item, i) => (
+          <ProductCardMini key={i} {...item} />
+        ))}
+      </motion.div>
+    </div>
+  );
+}
 
-  const pauseAnimation = () => controls.stop();
+export default function FeaturedCarousel({ items, title, subtitle, viewAllHref, viewAllLabel }: Props) {
+  const prefersReduced = useReducedMotion();
 
   return (
     <div>
@@ -99,25 +117,7 @@ export default function FeaturedCarousel({ items, title, subtitle, viewAllHref, 
           </div>
         </div>
       ) : (
-        <div
-          className="relative overflow-hidden"
-          style={{
-            maskImage: 'linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)',
-            WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%)',
-          }}
-          onMouseEnter={pauseAnimation}
-          onMouseLeave={startAnimation}
-        >
-          <motion.div
-            className="flex gap-4 px-6"
-            animate={controls}
-            onViewportEnter={startAnimation}
-          >
-            {track.map((item, i) => (
-              <ProductCardMini key={i} {...item} />
-            ))}
-          </motion.div>
-        </div>
+        <InfiniteTrack items={items} />
       )}
     </div>
   );
