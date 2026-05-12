@@ -5,6 +5,7 @@ import Footer from '../components/layout/Footer.astro';
 import Hero from '../components/sections/Hero.astro';
 import CategoryGrid from '../components/sections/CategoryGrid.astro';
 import ProductGrid from '../components/sections/ProductGrid.astro';
+import FeaturedCarousel from '../components/sections/FeaturedCarousel';
 import BenefitsBar from '../components/sections/BenefitsBar.astro';
 import SearchBar from '../components/ui/SearchBar';
 import type { Libro, Revista } from '../types/index.js';
@@ -35,25 +36,15 @@ const campaignActive = true;
     <CategoryGrid />
 
     <!-- Featured books -->
-    <section class="py-16 lg:py-20 bg-bg">
-      <div class="max-w-[1280px] mx-auto px-6">
-        <ProductGrid
-          title="Libros destacados"
-          subtitle="Selección editorial del mes"
-          items={featuredBooks}
-          scrollable={false}
-          columns={4}
-        />
-        <div class="mt-8 text-center">
-          <a
-            href="/catalogo/libros"
-            class="inline-flex items-center gap-2 font-inter text-sm font-medium text-text-muted hover:text-text transition-colors underline"
-          >
-            Ver todos los libros
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </a>
-        </div>
-      </div>
+    <section class="py-16 lg:py-20 bg-bg overflow-hidden">
+      <FeaturedCarousel
+        client:load
+        title="Libros destacados"
+        subtitle="Selección editorial del mes"
+        items={featuredBooks}
+        viewAllHref="/catalogo/libros"
+        viewAllLabel="Ver todos los libros"
+      />
     </section>
 
     <!-- Campaign banner -->
@@ -61,12 +52,12 @@ const campaignActive = true;
       <section class="bg-accent py-8">
         <div class="max-w-[1280px] mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <p class="font-playfair font-bold text-2xl text-[#0D0D0D]">Feria del Libro 2025</p>
-            <p class="font-inter text-[#1A1A1A] text-sm mt-1">Hasta 40% de descuento en títulos seleccionados</p>
+            <p class="font-playfair font-bold text-2xl text-primary">Feria del Libro 2025</p>
+            <p class="font-inter text-secondary text-sm mt-1">Hasta 40% de descuento en títulos seleccionados</p>
           </div>
           <a
             href="/catalogo"
-            class="flex-shrink-0 px-6 py-3 bg-[#0D0D0D] text-[#F8F8F5] font-inter font-medium text-sm rounded hover:bg-[#1A1A1A] transition-colors"
+            class="flex-shrink-0 px-6 py-3 bg-primary text-bg font-inter font-medium text-sm rounded hover:opacity-90 transition-opacity"
           >
             Ver ofertas
           </a>

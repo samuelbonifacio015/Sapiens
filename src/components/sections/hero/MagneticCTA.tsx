@@ -38,8 +38,8 @@ export default function MagneticCTA({ href, children, variant = 'primary', targe
 
   const className =
     variant === 'primary'
-      ? 'inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#0D0D0D] text-[#F8F8F5] font-inter font-medium text-sm tracking-wide rounded hover:bg-[#1A1A1A] active:scale-[0.98] transition-colors'
-      : 'inline-flex items-center justify-center gap-2 px-6 py-4 text-[#5C5C5C] font-inter font-medium text-sm hover:text-[#0D0D0D] active:scale-[0.98] transition-colors';
+      ? 'inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-bg font-inter font-medium text-sm tracking-wide rounded hover:opacity-90 active:scale-[0.98] transition-opacity'
+      : 'inline-flex items-center justify-center gap-2 px-6 py-4 text-text-muted font-inter font-medium text-sm hover:text-text active:scale-[0.98] transition-colors';
 
   return (
     <motion.a

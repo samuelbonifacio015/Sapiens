@@ -29,7 +29,7 @@ const colorIndex = (producto.id_libro ?? producto.id_revista ?? 0) % placeholder
 const placeholderBg = placeholderColors[colorIndex];
 ---
 
-<article class="group flex flex-col bg-surface border border-border rounded overflow-hidden hover:border-[#0D0D0D] transition-colors duration-150">
+<article class="group flex flex-col bg-surface border border-border rounded overflow-hidden hover:border-primary transition-colors duration-150">
   <a href={href} class="block relative overflow-hidden" aria-label={`Ver detalle de ${titulo}`}>
     <div class={`${aspectRatio} w-full relative overflow-hidden`} style={`background-color: ${placeholderBg}`}>
       <div class="absolute inset-0 flex items-end p-3">
@@ -65,7 +65,7 @@ const placeholderBg = placeholderColors[colorIndex];
       type="button"
       disabled={stock === 0}
       aria-label={`Agregar ${titulo} al carrito`}
-      class="w-full mt-2 px-4 py-2.5 bg-[#0D0D0D] text-[#F8F8F5] text-sm font-inter font-medium rounded transition-opacity duration-150 hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed md:opacity-0 md:group-hover:opacity-100"
+      class="w-full mt-2 px-4 py-2.5 bg-primary text-bg text-sm font-inter font-medium rounded transition-opacity duration-150 hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed md:opacity-0 md:group-hover:opacity-100"
     >
       {stock === 0 ? 'Sin stock' : 'Agregar al carrito'}
     </button>

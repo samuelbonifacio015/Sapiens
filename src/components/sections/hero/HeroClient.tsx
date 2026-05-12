@@ -14,7 +14,7 @@ export default function HeroClient() {
       <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-12 lg:gap-20 items-center py-24 lg:py-32">
         {/* Left: text column */}
         <div className="flex flex-col gap-6">
-          <h1 className="font-playfair font-bold text-5xl sm:text-6xl lg:text-[4.5rem] text-[#0D0D0D] leading-[1.05] tracking-tight">
+          <h1 className="font-playfair font-bold text-5xl sm:text-6xl lg:text-[4.5rem] text-text leading-[1.05] tracking-tight">
             {headingLines.map(({ text, limeUnderline }, i) => (
               <motion.span
                 key={text}
@@ -39,7 +39,7 @@ export default function HeroClient() {
           </h1>
 
           <motion.p
-            className="font-inter text-[#5C5C5C] text-lg leading-relaxed max-w-[42ch]"
+            className="font-inter text-text-muted text-lg leading-relaxed max-w-[42ch]"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.55 }}
@@ -66,7 +66,7 @@ export default function HeroClient() {
           </motion.div>
 
           <motion.p
-            className="font-inter text-xs text-[#5C5C5C] tracking-widest uppercase"
+            className="font-inter text-xs text-text-muted tracking-widest uppercase"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.90 }}
