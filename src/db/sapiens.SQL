@@ -125,6 +125,29 @@ INSERT INTO Detalles_Pedido (ID_Pedido, Tipo_Producto, ID_Producto, Cantidad, Pr
 (3, 'Libro', 5, 1, 65.00),
 (3, 'Revista', 2, 1, 12.00);
 
+-- Nuevos autores peruanos
+INSERT INTO Autores (Nombre_Autor, Nacionalidad) VALUES
+('Jeremías Gamboa', 'Peruana'),
+('Diego Trelles Paz', 'Peruana'),
+('Óscar Malca', 'Peruana'),
+('César Calvo', 'Peruana'),
+('Lucía Charún-Illescas', 'Peruana'),
+('Enrique López Albújar', 'Peruana'),
+('Óscar Colchado Lucio', 'Peruana'),
+('César Vallejo', 'Peruana');
+
+-- Nuevos libros
+INSERT INTO Libros (ISBN, Titulo, Editorial, Anio_Publicacion, Precio, Stock, ID_Categoria, ID_Autor) VALUES
+('978-612-4115-01-1', 'Contarlo todo', 'Planeta', 2013, 42.00, 60, 1, 6),
+('978-612-4115-02-2', 'Bioy', 'Peisa', 2012, 38.00, 45, 1, 7),
+('978-612-4115-03-3', 'Al final de la calle', 'El Santo Oficio', 2003, 35.00, 40, 1, 8),
+('978-612-4115-04-4', 'Las tres mitades de Ino Moxo', 'Proceso', 1981, 48.00, 30, 1, 9),
+('978-612-4115-05-5', 'Malambo', 'San Marcos', 2001, 40.00, 35, 1, 10),
+('978-612-4115-06-6', 'Matalaché', 'Peisa', 2005, 32.00, 50, 1, 11),
+('978-612-4115-07-7', 'Cholito en los Andes mágicos', 'San Marcos', 1999, 28.00, 90, 5, 12),
+('978-612-4115-08-8', 'Paco Yunque', 'Santillana', 2010, 22.00, 120, 1, 13),
+('978-612-4115-09-9', 'Trilce', 'Cátedra', 2014, 35.00, 55, 1, 13);
+
 -- Ejemplo de modificación de datos (UPDATE)
 UPDATE Libros SET Stock = Stock - 1 WHERE ID_Libro = 1;
 UPDATE Pedidos SET Estado = 'Confirmado' WHERE ID_Pedido = 3;

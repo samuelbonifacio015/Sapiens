@@ -24,17 +24,32 @@ const frecuencia = revista?.frecuencia ?? '';
 const href = isLibro ? `/libros/${libro!.id_libro}` : `/revistas/${revista!.id_revista}`;
 const aspectRatio = isLibro ? 'aspect-[2/3]' : 'aspect-[3/4]';
 
-const placeholderColors = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0', '#E8E8D5'];
-const colorIndex = (producto.id_libro ?? producto.id_revista ?? 0) % placeholderColors.length;
-const placeholderBg = placeholderColors[colorIndex];
+const bookCoverByTitle: Record<string, string> = {
+  'La ciudad y los perros': '/books/laciudad-y-los-perros.jpg',
+  'La tentación del fracaso': '/books/tentacion-fracaso.jpg',
+  'Cien años de soledad': '/books/cien-anios-soledad.jpg',
+  'La casa de los espíritus': '/books/casa-espiritus.jpg',
+  'Sapiens: De animales a dioses': '/books/sapiens.jpg',
+  'Meridiano de sangre': '/books/meridiano-sangre.jpg',
+};
+
+const coverSrc = isLibro ? bookCoverByTitle[titulo] : '';
 ---
 
 <article class="group flex flex-col bg-surface border border-border rounded overflow-hidden hover:border-primary transition-colors duration-150">
   <a href={href} class="block relative overflow-hidden" aria-label={`Ver detalle de ${titulo}`}>
-    <div class={`${aspectRatio} w-full relative overflow-hidden`} style={`background-color: ${placeholderBg}`}>
-      <div class="absolute inset-0 flex items-end p-3">
-        <span class="text-[10px] font-inter font-medium text-[#5C5C5C] uppercase tracking-widest line-clamp-2">{titulo}</span>
-      </div>
+    <div class={`${aspectRatio} w-full relative overflow-hidden bg-[#F4F1EA]`}>
+      {coverSrc ? (
+        <img
+          src={coverSrc}
+          alt={`Portada de ${titulo}`}
+          loading="lazy"
+          decoding="async"
+          class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+        />
+      ) : (
+        <div class="h-full w-full bg-[#F4F1EA]"></div>
+      )}
     </div>
     <div class="absolute top-2 left-2">
       {categoriaName && <Badge variant="default">{categoriaName}</Badge>}

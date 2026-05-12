@@ -56,14 +56,20 @@ function InfiniteTrack({ items }: { items: CarouselItem[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const [paused, setPaused] = useState(false);
+  const halfWidthRef = useRef(0);
   const SPEED = 40; // px/s
 
   useAnimationFrame((_, delta) => {
     if (paused || !trackRef.current) return;
-    const halfWidth = trackRef.current.scrollWidth / 2;
-    if (halfWidth === 0) return;
+    if (!halfWidthRef.current) {
+      const w = trackRef.current.scrollWidth / 2;
+      if (w === 0) return;
+      halfWidthRef.current = w;
+    }
+    const halfWidth = halfWidthRef.current;
     const next = x.get() - (SPEED * delta) / 1000;
-    x.set(next <= -halfWidth ? 0 : next);
+    // wrap using addition to preserve sub-pixel offset — no jump
+    x.set(next <= -halfWidth ? next + halfWidth : next);
   });
 
   const track = [...items, ...items];
