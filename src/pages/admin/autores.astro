@@ -1,16 +1,9 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
-<<<<<<< HEAD
-import { findAllAutores } from '../../lib/repos/autores.js';
-import { findAllLibros } from '../../lib/repos/libros.js';
-
-const [autores, libros] = await Promise.all([findAllAutores(), findAllLibros({ size: 500 })]);
-=======
 import { getAutores } from '../../lib/db/queries/autores';
 import { getLibros } from '../../lib/db/queries/libros';
 
 const [autores, libros] = await Promise.all([getAutores(), getLibros()]);
->>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 ---
 
 <AdminLayout title="Autores — Admin Sapiens">
@@ -29,7 +22,7 @@ const [autores, libros] = await Promise.all([getAutores(), getLibros()]);
             <tr class="hover:bg-bg transition-colors">
               <td class="px-4 py-3">
                 <a href={`/autores/${autor.id_autor}`} class="font-inter font-medium text-text hover:underline">{autor.nombre_autor}</a>
-                {autor.nacionalidad && <p class="font-inter text-xs text-text-muted mt-0.5 line-clamp-1">{autor.nacionalidad}</p>}
+                {autor.bio && <p class="font-inter text-xs text-text-muted mt-0.5 line-clamp-1">{autor.bio}</p>}
               </td>
               <td class="px-4 py-3 text-text-muted">
                 {libros.filter(l => l.id_autor === autor.id_autor).length}

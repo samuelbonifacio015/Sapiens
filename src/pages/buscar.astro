@@ -3,23 +3,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
 import SearchResults from '../components/sections/SearchResults';
-<<<<<<< HEAD
-import { findAllLibros } from '../lib/repos/libros.js';
-import { findAllRevistas } from '../lib/repos/revistas.js';
-
-export const prerender = false;
-
-const [libros, revistas] = await Promise.all([
-  findAllLibros({ size: 1000 }),
-  findAllRevistas({ size: 1000 }),
-]);
-=======
 import { getLibros } from '../lib/db/queries/libros';
 import { getRevistas } from '../lib/db/queries/revistas';
 
 const libros = await getLibros();
 const revistas = await getRevistas();
->>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 ---
 
 <BaseLayout title="Buscar — Sapiens">

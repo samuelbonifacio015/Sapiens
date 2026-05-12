@@ -1,12 +1,5 @@
 ---
 import AdminLayout from '../../../components/layout/AdminLayout.astro';
-<<<<<<< HEAD
-import { findPedidoById, findDetallesByPedido } from '../../../lib/repos/pedidos.js';
-
-export const prerender = false;
-
-if (Astro.locals.user?.rol !== 'ADMIN') return Astro.redirect('/iniciar-sesion');
-=======
 import { getPedidoById } from '../../../lib/db/queries/pedidos';
 import { getLibros } from '../../../lib/db/queries/libros';
 import { getRevistas } from '../../../lib/db/queries/revistas';
@@ -14,20 +7,17 @@ import { getRevistas } from '../../../lib/db/queries/revistas';
 const id = Number(Astro.params.id);
 const [pedido, libros, revistas] = await Promise.all([getPedidoById(id), getLibros(), getRevistas()]);
 if (!pedido) return Astro.redirect('/admin/pedidos');
->>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
-
-const id = Number(Astro.params.id);
-const pedido = await findPedidoById(id);
-if (!pedido) return Astro.redirect('/404');
-const detalles = await findDetallesByPedido(id);
 
 const ESTADOS = ['Pendiente', 'Confirmado', 'En camino', 'Entregado', 'Cancelado'];
 const estadoColor: Record<string, string> = {
-  Pendiente: 'bg-warning text-[#0D0D0D]',
-  Confirmado: 'bg-[#0D0D0D] text-[#F8F8F5]',
-  'En camino': 'bg-[#0D0D0D] text-[#F8F8F5]',
-  Entregado: 'bg-success text-white',
-  Cancelado: 'bg-error text-white',
+  pendiente: 'bg-warning text-[#0D0D0D]',
+  confirmado: 'bg-[#0D0D0D] text-[#F8F8F5]',
+  enviado: 'bg-[#0D0D0D] text-[#F8F8F5]',
+  entregado: 'bg-success text-white',
+  cancelado: 'bg-error text-white',
+};
+const estadoLabel: Record<string, string> = {
+  pendiente: 'Pendiente', confirmado: 'Confirmado', enviado: 'En camino', entregado: 'Entregado', cancelado: 'Cancelado',
 };
 ---
 
@@ -44,7 +34,7 @@ const estadoColor: Record<string, string> = {
     <div class="flex items-center justify-between gap-4 mb-8">
       <h1 class="font-playfair font-bold text-3xl text-text">Pedido #{pedido.id_pedido}</h1>
       <span class={`px-3 py-1.5 text-xs font-inter font-semibold rounded ${estadoColor[pedido.estado] ?? 'bg-surface text-text'}`}>
-        {pedido.estado}
+        {estadoLabel[pedido.estado] ?? pedido.estado}
       </span>
     </div>
 
@@ -61,13 +51,13 @@ const estadoColor: Record<string, string> = {
       {pedido.cliente && (
         <div class="bg-surface border border-border rounded p-5">
           <h2 class="font-inter font-semibold text-text text-sm mb-3">Cliente</h2>
-          <p class="font-inter text-sm text-text">{pedido.cliente.nombre_cliente}</p>
-          <p class="font-inter text-sm text-text-muted">{pedido.cliente.correo}</p>
+          <p class="font-inter text-sm text-text">{pedido.cliente.nombre}</p>
+          <p class="font-inter text-sm text-text-muted">{pedido.cliente.email}</p>
         </div>
       )}
       <div class="bg-surface border border-border rounded p-5">
         <h2 class="font-inter font-semibold text-text text-sm mb-3">Detalles</h2>
-        <p class="font-inter text-sm text-text-muted">Fecha: {new Date(pedido.fecha_pedido).toLocaleString()}</p>
+        <p class="font-inter text-sm text-text-muted">Fecha: {new Date(pedido.fecha).toLocaleString()}</p>
         <p class="font-inter text-sm text-text-muted">Total: <strong class="text-text">S/ {pedido.total.toFixed(2)}</strong></p>
       </div>
     </div>
@@ -77,11 +67,11 @@ const estadoColor: Record<string, string> = {
         <h2 class="font-inter font-semibold text-text text-sm">Productos</h2>
       </div>
       <div class="divide-y divide-border">
-        {detalles.map(detalle => (
+        {(pedido.detalles ?? []).map(detalle => (
           <div class="flex items-center justify-between px-5 py-4">
             <div>
-              <p class="font-inter text-sm text-text">{detalle.producto?.titulo ?? `${detalle.tipo_producto} #${detalle.id_producto}`}</p>
-              <p class="font-inter text-xs text-text-muted">{detalle.tipo_producto} × {detalle.cantidad}</p>
+              <p class="font-inter text-sm text-text">{detalle.id_libro ? (libros.find(l => l.id_libro === detalle.id_libro)?.titulo ?? `Libro #${detalle.id_libro}`) : (revistas.find(r => r.id_revista === detalle.id_revista)?.titulo ?? `Revista #${detalle.id_revista}`)}</p>
+              <p class="font-inter text-xs text-text-muted">{detalle.id_libro ? 'Libro' : 'Revista'} × {detalle.cantidad}</p>
             </div>
             <span class="font-inter font-medium text-text text-sm">
               S/ {(detalle.precio_unitario * detalle.cantidad).toFixed(2)}

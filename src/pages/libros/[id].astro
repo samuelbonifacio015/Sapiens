@@ -5,18 +5,6 @@ import Footer from '../../components/layout/Footer.astro';
 import StockIndicator from '../../components/ui/StockIndicator.astro';
 import Badge from '../../components/ui/Badge.astro';
 import ProductCard from '../../components/ui/ProductCard.astro';
-<<<<<<< HEAD
-import { findLibroById, findAllLibros } from '../../lib/repos/libros.js';
-
-const id = Number(Astro.params.id);
-if (!Number.isFinite(id)) return Astro.redirect('/catalogo/libros');
-
-const libro = await findLibroById(id);
-if (!libro) return new Response('Libro no encontrado', { status: 404 });
-
-const sameAutor = await findAllLibros({ autor: libro.id_autor, size: 8 });
-const related = sameAutor
-=======
 import { getLibroById, getLibrosByAutor } from '../../lib/db/queries/libros';
 
 const id = Number(Astro.params.id);
@@ -24,7 +12,6 @@ const libro = await getLibroById(id);
 if (!libro) return Astro.redirect('/catalogo/libros');
 
 const related = (await getLibrosByAutor(libro.id_autor))
->>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
   .filter(l => l.id_libro !== libro.id_libro)
   .slice(0, 4)
   .map(l => ({ producto: l, tipo: 'libro' as const }));

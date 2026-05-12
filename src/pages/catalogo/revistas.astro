@@ -4,20 +4,10 @@ import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
 import ProductCard from '../../components/ui/ProductCard.astro';
 import FilterSidebar from '../../components/sections/FilterSidebar';
-<<<<<<< HEAD
-import { findAllRevistas } from '../../lib/repos/revistas.js';
-import { findAllCategorias } from '../../lib/repos/categorias.js';
-
-const [revistas, categorias] = await Promise.all([
-  findAllRevistas({ size: 200 }),
-  findAllCategorias(),
-]);
-=======
 import { getRevistas } from '../../lib/db/queries/revistas';
 import { getCategorias } from '../../lib/db/queries/categorias';
 
 const [revistas, categorias] = await Promise.all([getRevistas(), getCategorias()]);
->>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 
 const categoriasWithCount = categorias.map(cat => ({
   ...cat,

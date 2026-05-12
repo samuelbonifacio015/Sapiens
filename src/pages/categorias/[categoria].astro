@@ -3,29 +3,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
 import ProductCard from '../../components/ui/ProductCard.astro';
-<<<<<<< HEAD
-import { findAllCategorias } from '../../lib/repos/categorias.js';
-import { findAllLibros } from '../../lib/repos/libros.js';
-import { findAllRevistas } from '../../lib/repos/revistas.js';
-
-const slugify = (name: string) =>
-  name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
-
-const slug = String(Astro.params.categoria ?? '');
-const categorias = await findAllCategorias();
-const categoria = categorias.find(c => slugify(c.nombre_categoria) === slug);
-if (!categoria) return new Response('Categoría no encontrada', { status: 404 });
-
-const [libros, revistas] = await Promise.all([
-  findAllLibros({ categoria: categoria.id_categoria, size: 500 }),
-  findAllRevistas({ categoria: categoria.id_categoria, size: 500 }),
-]);
-
-const allItems = [
-  ...libros.map(l => ({ producto: l, tipo: 'libro' as const })),
-  ...revistas.map(r => ({ producto: r, tipo: 'revista' as const })),
-];
-=======
 import { getCategoriaBySlug } from '../../lib/db/queries/categorias';
 import { getLibrosByCategoria } from '../../lib/db/queries/libros';
 import { getRevistasByCategoria } from '../../lib/db/queries/revistas';
@@ -40,7 +17,6 @@ const [librosItems, revistasItems] = await Promise.all([
 ]);
 
 const allItems = [...librosItems, ...revistasItems];
->>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 ---
 
 <BaseLayout title={`${categoria.nombre_categoria} — Sapiens`}>

@@ -1,18 +1,17 @@
 {
   "version": 1,
   "skills": {
-<<<<<<< HEAD
-    "context7-cli": {
-      "source": "upstash/context7",
-      "sourceType": "github",
-      "skillPath": "skills/context7-cli/SKILL.md",
-      "computedHash": "fc0c682dac344a4c78787072ae9b5b8708d4d5a14b2101c9b45de557bf9b7755"
-=======
     "brandkit": {
       "source": "Leonxlnx/taste-skill",
       "sourceType": "github",
       "skillPath": "skills/brandkit/SKILL.md",
       "computedHash": "b63012f3c3d21197e0185d3e9cc7ec40c589fb10e0b5a32a561739de31aa3f20"
+    },
+    "context7-cli": {
+      "source": "upstash/context7",
+      "sourceType": "github",
+      "skillPath": "skills/context7-cli/SKILL.md",
+      "computedHash": "fc0c682dac344a4c78787072ae9b5b8708d4d5a14b2101c9b45de557bf9b7755"
     },
     "design-taste-frontend": {
       "source": "Leonxlnx/taste-skill",
@@ -85,7 +84,6 @@
       "sourceType": "github",
       "skillPath": "skills/stitch-skill/SKILL.md",
       "computedHash": "3aa58992f0fd9673b975cd48cd4f8ae4b4976fd5cdd9f20e26d3d447aee317fb"
->>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
     }
   }
 }

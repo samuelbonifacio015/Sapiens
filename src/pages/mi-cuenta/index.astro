@@ -2,27 +2,19 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
-<<<<<<< HEAD
-import { findPedidosByCliente } from '../../lib/repos/pedidos.js';
-
-export const prerender = false;
-
-if (!Astro.locals.user) return Astro.redirect('/iniciar-sesion?next=/mi-cuenta');
-
-const pedidos = await findPedidosByCliente(Astro.locals.user.id);
-const recentPedidos = pedidos.slice(0, 3);
-=======
 import { getRecentPedidos, getPedidos } from '../../lib/db/queries/pedidos';
 
 const [recentPedidos, pedidos] = await Promise.all([getRecentPedidos(3), getPedidos()]);
->>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 
 const estadoColor: Record<string, string> = {
-  Pendiente: 'bg-warning/10 text-warning',
-  Confirmado: 'bg-[#0D0D0D]/10 text-[#0D0D0D]',
-  'En camino': 'bg-[#0D0D0D]/10 text-[#0D0D0D]',
-  Entregado: 'bg-success/10 text-success',
-  Cancelado: 'bg-error/10 text-error',
+  pendiente: 'bg-warning/10 text-warning',
+  confirmado: 'bg-[#0D0D0D]/10 text-[#0D0D0D]',
+  enviado: 'bg-[#0D0D0D]/10 text-[#0D0D0D]',
+  entregado: 'bg-success/10 text-success',
+  cancelado: 'bg-error/10 text-error',
+};
+const estadoLabel: Record<string, string> = {
+  pendiente: 'Pendiente', confirmado: 'Confirmado', enviado: 'En camino', entregado: 'Entregado', cancelado: 'Cancelado',
 };
 ---
 
@@ -65,12 +57,12 @@ const estadoColor: Record<string, string> = {
             <a href={`/mi-cuenta/pedidos/${pedido.id_pedido}`} class="flex items-center justify-between p-4 hover:bg-bg transition-colors group">
               <div>
                 <p class="font-inter font-medium text-text text-sm">Pedido #{pedido.id_pedido}</p>
-                <p class="font-inter text-xs text-text-muted mt-0.5">{new Date(pedido.fecha_pedido).toLocaleString()}</p>
+                <p class="font-inter text-xs text-text-muted mt-0.5">{new Date(pedido.fecha).toLocaleString()}</p>
               </div>
               <div class="flex items-center gap-4">
                 <span class="font-inter font-bold text-text text-sm">S/ {pedido.total.toFixed(2)}</span>
                 <span class={`px-2.5 py-1 text-xs font-inter font-medium rounded ${estadoColor[pedido.estado] ?? 'bg-surface text-text'}`}>
-                  {pedido.estado}
+                  {estadoLabel[pedido.estado] ?? pedido.estado}
                 </span>
               </div>
             </a>

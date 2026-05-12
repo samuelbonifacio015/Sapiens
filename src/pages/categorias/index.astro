@@ -2,23 +2,11 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
-<<<<<<< HEAD
-import { findAllCategorias } from '../../lib/repos/categorias.js';
-import { findAllLibros } from '../../lib/repos/libros.js';
-import { findAllRevistas } from '../../lib/repos/revistas.js';
-
-const [categorias, libros, revistas] = await Promise.all([
-  findAllCategorias(),
-  findAllLibros({ size: 500 }),
-  findAllRevistas({ size: 500 }),
-]);
-=======
 import { getCategorias } from '../../lib/db/queries/categorias';
 import { getLibros } from '../../lib/db/queries/libros';
 import { getRevistas } from '../../lib/db/queries/revistas';
 
 const [categorias, libros, revistas] = await Promise.all([getCategorias(), getLibros(), getRevistas()]);
->>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 
 const categorySlug = (name: string) =>
   name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');

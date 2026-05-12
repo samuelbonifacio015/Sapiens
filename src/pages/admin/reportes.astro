@@ -1,25 +1,11 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
-<<<<<<< HEAD
-import { findAllPedidos } from '../../lib/repos/pedidos.js';
-import { findAllLibros } from '../../lib/repos/libros.js';
-=======
 import { getPedidos } from '../../lib/db/queries/pedidos';
 import { getLibros } from '../../lib/db/queries/libros';
 
 const [pedidos, libros] = await Promise.all([getPedidos(), getLibros()]);
->>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 
-export const prerender = false;
-
-if (Astro.locals.user?.rol !== 'ADMIN') return Astro.redirect('/iniciar-sesion');
-
-const [pedidos, libros] = await Promise.all([
-  findAllPedidos(),
-  findAllLibros({ size: 1000 }),
-]);
-
-const activos = pedidos.filter(p => p.estado !== 'Cancelado');
+const activos = pedidos.filter(p => p.estado !== 'cancelado');
 const ingresosTotales = activos.reduce((s, p) => s + p.total, 0);
 const ticketPromedio = ingresosTotales / Math.max(activos.length, 1);
 const topLibros = [...libros].sort((a, b) => b.stock - a.stock).slice(0, 5);
@@ -33,9 +19,9 @@ const topLibros = [...libros].sort((a, b) => b.stock - a.stock).slice(0, 5);
         { label: 'Ingresos totales', value: `S/ ${ingresosTotales.toFixed(2)}` },
         { label: 'Ticket promedio', value: `S/ ${ticketPromedio.toFixed(2)}` },
         { label: 'Pedidos totales', value: pedidos.length },
-        { label: 'Entregados', value: pedidos.filter(p => p.estado === 'Entregado').length },
-        { label: 'Cancelados', value: pedidos.filter(p => p.estado === 'Cancelado').length },
-        { label: 'Pendientes', value: pedidos.filter(p => p.estado === 'Pendiente').length },
+        { label: 'Entregados', value: pedidos.filter(p => p.estado === 'entregado').length },
+        { label: 'Cancelados', value: pedidos.filter(p => p.estado === 'cancelado').length },
+        { label: 'Pendientes', value: pedidos.filter(p => p.estado === 'pendiente').length },
       ].map(s => (
         <div class="bg-surface border border-border rounded p-5">
           <p class="font-inter font-bold text-2xl text-text">{s.value}</p>

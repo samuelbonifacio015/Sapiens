@@ -1,24 +1,8 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
-<<<<<<< HEAD
-import { findAllClientes } from '../../lib/repos/clientes.js';
-import { db } from '../../lib/db.js';
-
-export const prerender = false;
-
-if (Astro.locals.user?.rol !== 'ADMIN') return Astro.redirect('/iniciar-sesion');
-
-const clientes = await findAllClientes();
-const [countRows]: any = await db.query(
-  `SELECT ID_Cliente, COUNT(*) AS total FROM Pedidos GROUP BY ID_Cliente`
-);
-const counts: Record<number, number> = {};
-for (const r of countRows) counts[r.ID_Cliente] = Number(r.total);
-=======
 import { getClientes } from '../../lib/db/queries/pedidos';
 
 const clientes = await getClientes();
->>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 ---
 
 <AdminLayout title="Clientes — Admin Sapiens">
@@ -38,11 +22,11 @@ const clientes = await getClientes();
         <tbody class="divide-y divide-border">
           {clientes.map(cliente => (
             <tr class="hover:bg-bg transition-colors">
-              <td class="px-4 py-3 font-inter font-medium text-text">{cliente.nombre_cliente}</td>
-              <td class="px-4 py-3 text-text-muted">{cliente.correo}</td>
+              <td class="px-4 py-3 font-inter font-medium text-text">{cliente.nombre}</td>
+              <td class="px-4 py-3 text-text-muted">{cliente.email}</td>
               <td class="px-4 py-3 text-text-muted hidden md:table-cell">{cliente.telefono ?? '—'}</td>
-              <td class="px-4 py-3 text-text-muted">{cliente.rol ?? 'USER'}</td>
-              <td class="px-4 py-3 text-text-muted">{counts[cliente.id_cliente] ?? 0}</td>
+              <td class="px-4 py-3 text-text-muted">USER</td>
+              <td class="px-4 py-3 text-text-muted">—</td>
             </tr>
           ))}
         </tbody>

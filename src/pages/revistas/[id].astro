@@ -5,18 +5,6 @@ import Footer from '../../components/layout/Footer.astro';
 import StockIndicator from '../../components/ui/StockIndicator.astro';
 import Badge from '../../components/ui/Badge.astro';
 import ProductCard from '../../components/ui/ProductCard.astro';
-<<<<<<< HEAD
-import { findRevistaById, findAllRevistas } from '../../lib/repos/revistas.js';
-
-const id = Number(Astro.params.id);
-if (!Number.isFinite(id)) return Astro.redirect('/catalogo/revistas');
-
-const revista = await findRevistaById(id);
-if (!revista) return new Response('Revista no encontrada', { status: 404 });
-
-const sameCat = await findAllRevistas({ categoria: revista.id_categoria, size: 8 });
-const related = sameCat
-=======
 import { getRevistaById, getRevistasByCategoria } from '../../lib/db/queries/revistas';
 
 const id = Number(Astro.params.id);
@@ -24,7 +12,6 @@ const revista = await getRevistaById(id);
 if (!revista) return Astro.redirect('/catalogo/revistas');
 
 const related = (await getRevistasByCategoria(revista.id_categoria))
->>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
   .filter(r => r.id_revista !== revista.id_revista)
   .slice(0, 4)
   .map(r => ({ producto: r, tipo: 'revista' as const }));

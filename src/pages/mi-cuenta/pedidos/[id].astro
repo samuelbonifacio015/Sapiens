@@ -2,21 +2,6 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Header from '../../../components/layout/Header.astro';
 import Footer from '../../../components/layout/Footer.astro';
-<<<<<<< HEAD
-import { findPedidoById, findDetallesByPedido } from '../../../lib/repos/pedidos.js';
-
-export const prerender = false;
-
-if (!Astro.locals.user) return Astro.redirect('/iniciar-sesion');
-
-const id = Number(Astro.params.id);
-const pedido = await findPedidoById(id);
-if (!pedido) return Astro.redirect('/404');
-if (Astro.locals.user.rol !== 'ADMIN' && pedido.id_cliente !== Astro.locals.user.id) {
-  return new Response('Forbidden', { status: 403 });
-}
-const detalles = await findDetallesByPedido(id);
-=======
 import { getPedidoById } from '../../../lib/db/queries/pedidos';
 import { getLibros } from '../../../lib/db/queries/libros';
 import { getRevistas } from '../../../lib/db/queries/revistas';
@@ -24,14 +9,16 @@ import { getRevistas } from '../../../lib/db/queries/revistas';
 const id = Number(Astro.params.id);
 const [pedido, libros, revistas] = await Promise.all([getPedidoById(id), getLibros(), getRevistas()]);
 if (!pedido) return Astro.redirect('/mi-cuenta/pedidos');
->>>>>>> 4d6d650749cfc2cc5e98d745d8b66bec85505759
 
 const estadoColor: Record<string, string> = {
-  Pendiente: 'bg-warning text-[#0D0D0D]',
-  Confirmado: 'bg-[#0D0D0D] text-[#F8F8F5]',
-  'En camino': 'bg-[#0D0D0D] text-[#F8F8F5]',
-  Entregado: 'bg-success text-white',
-  Cancelado: 'bg-error text-white',
+  pendiente: 'bg-warning text-[#0D0D0D]',
+  confirmado: 'bg-[#0D0D0D] text-[#F8F8F5]',
+  enviado: 'bg-[#0D0D0D] text-[#F8F8F5]',
+  entregado: 'bg-success text-white',
+  cancelado: 'bg-error text-white',
+};
+const estadoLabel: Record<string, string> = {
+  pendiente: 'Pendiente', confirmado: 'Confirmado', enviado: 'En camino', entregado: 'Entregado', cancelado: 'Cancelado',
 };
 ---
 
@@ -49,10 +36,10 @@ const estadoColor: Record<string, string> = {
     <div class="flex items-start justify-between gap-4 mb-8">
       <div>
         <h1 class="font-playfair font-bold text-3xl text-text">Pedido #{pedido.id_pedido}</h1>
-        <p class="font-inter text-text-muted text-sm mt-1">{new Date(pedido.fecha_pedido).toLocaleString()}</p>
+        <p class="font-inter text-text-muted text-sm mt-1">{new Date(pedido.fecha).toLocaleString()}</p>
       </div>
       <span class={`px-3 py-1.5 text-xs font-inter font-semibold rounded ${estadoColor[pedido.estado] ?? 'bg-surface text-text'}`}>
-        {pedido.estado}
+        {estadoLabel[pedido.estado] ?? pedido.estado}
       </span>
     </div>
 
@@ -61,10 +48,10 @@ const estadoColor: Record<string, string> = {
         <h2 class="font-inter font-semibold text-text text-sm">Productos</h2>
       </div>
       <div class="divide-y divide-border">
-        {detalles.map(detalle => (
+        {(pedido.detalles ?? []).map(detalle => (
           <div class="flex items-center justify-between px-5 py-4 gap-4">
             <div>
-              <p class="font-inter text-sm text-text">{detalle.producto?.titulo ?? `${detalle.tipo_producto} #${detalle.id_producto}`}</p>
+              <p class="font-inter text-sm text-text">{detalle.id_libro ? (libros.find(l => l.id_libro === detalle.id_libro)?.titulo ?? `Libro #${detalle.id_libro}`) : (revistas.find(r => r.id_revista === detalle.id_revista)?.titulo ?? `Revista #${detalle.id_revista}`)}</p>
               <p class="font-inter text-xs text-text-muted mt-0.5">x{detalle.cantidad}</p>
             </div>
             <span class="font-inter font-medium text-text text-sm whitespace-nowrap">
@@ -82,8 +69,8 @@ const estadoColor: Record<string, string> = {
     {pedido.cliente && (
       <div class="bg-surface border border-border rounded p-5">
         <h2 class="font-inter font-semibold text-text text-sm mb-3">Datos de contacto</h2>
-        <p class="font-inter text-sm text-text-muted">{pedido.cliente.nombre_cliente}</p>
-        <p class="font-inter text-sm text-text-muted">{pedido.cliente.correo}</p>
+        <p class="font-inter text-sm text-text-muted">{pedido.cliente.nombre}</p>
+        <p class="font-inter text-sm text-text-muted">{pedido.cliente.email}</p>
       </div>
     )}
   </main>
