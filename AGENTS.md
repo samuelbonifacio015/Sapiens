@@ -1,34 +1,15 @@
 <claude-mem-context>
 # Memory Context
 
-# [Sapiens] recent context, 2026-05-12 12:20pm GMT-5
+# [Sapiens] recent context, 2026-05-12 4:34pm GMT-5
 
 Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision 🚨security_alert 🔐security_note
 Format: ID TIME TYPE TITLE
 Fetch details: get_observations([IDs]) | Search: mem-search skill
 
-Stats: 50 obs (13.638t read) | 172.638t work | 92% savings
+Stats: 50 obs (15.709t read) | 1.349.615t work | 99% savings
 
 ### May 12, 2026
-108 9:29a 🔴 Admin inventory and catalog pages resolved—18 files migrated
-109 " 🔴 Admin clients page resolved—19 files migrated; order counting logic removed
-110 9:30a ✅ Admin clients template fields updated to match db/queries Cliente structure
-111 " ✅ Reports page resolved with estado field value alignment to db/queries mapping
-112 " 🔴 Admin dashboard resolved—21 files migrated; specialized query functions adopted
-113 " ✅ Dashboard template updated for complete db/queries data structure alignment
-114 9:33a 🔵 Database configuration and environment setup identified
-115 9:34a 🔴 Fixed database password environment variable mismatch
-116 10:11a ✅ Tailwind dark mode configured for class-based strategy
-117 " ✅ Design tokens updated for class-based dark/light mode control
-118 10:12a ✅ Anti-FOUC theme hydration script added to BaseLayout
-119 " 🟣 Theme toggle button added to header
-120 " ✅ Mobile menu background updated to use design token
-121 " ✅ Mobile menu link colors updated to use design token
-122 " ✅ All mobile menu text colors standardized to design token
-123 " 🟣 Theme toggle click handler implemented
-124 " ✅ Hero heading color updated to use design token
-125 " ✅ Hero description color updated to use design token
-126 " ✅ Hero tagline color updated to use design token
 127 10:13a ✅ ProductCard button colors updated to use design tokens
 128 " ✅ ProductCard hover border updated to use design token
 129 " ✅ Campaign banner updated to use design tokens
@@ -70,6 +51,25 @@ S44 Resolve dev server still referencing old database configuration despite .env
 155 11:19a ✅ Refactored book-covers module builds successfully with simplified lookup
 158 11:20a 🔵 Book database contains unmapped titles; Contarlo todo renders without image
 161 " 🔵 Only 6 of 14 books have cover image files in public directory
+162 4:14p 🟣 JWT Session Management with Role-Based Access Control
+163 " 🟣 CSRF Double-Submit Cookie Protection on All Mutating Endpoints
+164 " 🟣 Route Protection Middleware with Post-Login Redirect
+165 " 🟣 Customer Data Scoping via User ID in Account Pages
+166 " 🟣 Admin Dashboard with Embedded Security & Scale Readiness Checklist
+167 " 🟣 Customer Account Dashboard with Personalized KPIs and Order History
+168 " 🟣 Dark/Light Theme Toggle in Admin Layout with localStorage Persistence
+169 " 🔵 Comprehensive Test Coverage for Authentication and Data Scoping
+170 4:17p 🔵 Admin Seeding Process via npm Script
+171 " 🔵 User Login Authentication Flow
+172 " 🔵 User Registration Process
+173 " 🔵 Authentication System Architecture
+174 4:18p 🔵 Environment Configuration for Admin Seeding and Authentication
+175 " 🔵 Input Validation Schemas for Authentication
+176 " 🔵 CSRF Token Generation and Protection
+177 " 🔵 API Error Handling and Role-Based Access Control
+178 4:28p 🔴 Admin page missing Tailwind CSS import
+179 " ✅ Test assertion added for Tailwind CSS import in AdminLayout
+180 4:29p 🟣 Admin styles fix verified and deployed to main branch
 
-Access 173k tokens of past work via get_observations([IDs]) or mem-search skill.
+Access 1350k tokens of past work via get_observations([IDs]) or mem-search skill.
 </claude-mem-context>

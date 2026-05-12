@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { motion, useMotionValue, useAnimationFrame, useReducedMotion } from 'framer-motion';
 import type { Libro, Revista } from '../../types/index.js';
 import { getBookCoverSrc } from '../../lib/book-covers.js';
+import { getMagazineCoverSrc } from '../../lib/magazine-covers.js';
 
 interface CarouselItem {
   producto: Libro | Revista;
@@ -23,12 +24,13 @@ function ProductCardMini({ producto, tipo }: CarouselItem) {
   const href = isLibro ? `/libros/${libro!.id_libro}` : `/revistas/${revista!.id_revista}`;
   const autorName = libro?.autor?.nombre_autor ?? '';
   const frecuencia = revista?.frecuencia ?? '';
-  const coverSrc = libro ? getBookCoverSrc(libro) : '';
+  const coverSrc = libro ? getBookCoverSrc(libro) : revista ? getMagazineCoverSrc(revista) : '';
+  const aspectRatio = isLibro ? 'aspect-[2/3]' : 'aspect-[3/4]';
 
   return (
     <article className="group flex flex-col bg-surface border border-border rounded overflow-hidden hover:border-primary transition-colors duration-150 w-44 sm:w-52 flex-shrink-0">
       <a href={href} className="block relative overflow-hidden" aria-label={`Ver detalle de ${producto.titulo}`}>
-        <div className="aspect-[2/3] w-full relative overflow-hidden bg-[#F4F1EA]">
+        <div className={`${aspectRatio} w-full relative overflow-hidden bg-[#F4F1EA]`}>
           {coverSrc ? (
             <img
               src={coverSrc}

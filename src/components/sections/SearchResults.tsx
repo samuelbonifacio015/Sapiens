@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { Libro, Revista } from '../../types/index.js';
+import { getBookCoverSrc } from '../../lib/book-covers.js';
+import { getMagazineCoverSrc } from '../../lib/magazine-covers.js';
 
 interface Product {
   producto: Libro | Revista;
@@ -10,8 +12,6 @@ interface SearchResultsProps {
   libros: Libro[];
   revistas: Revista[];
 }
-
-const PLACEHOLDER_COLORS = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0', '#E8E8D5'];
 
 function normalizeStr(s: string) {
   return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -118,15 +118,27 @@ export default function SearchResults({ libros, revistas }: SearchResultsProps) 
               const isLibro = tipo === 'libro';
               const id = (producto as Libro).id_libro ?? (producto as Revista).id_revista ?? 0;
               const href = isLibro ? `/libros/${(producto as Libro).id_libro}` : `/revistas/${(producto as Revista).id_revista}`;
-              const colorIdx = id % PLACEHOLDER_COLORS.length;
+              const coverSrc = isLibro
+                ? getBookCoverSrc(producto as Libro)
+                : getMagazineCoverSrc(producto as Revista);
               const stock = producto.stock;
               const stockLabel = stock === 0 ? 'Sin stock' : stock <= 4 ? 'Stock limitado' : 'Disponible';
               const stockColor = stock === 0 ? 'text-error' : stock <= 4 ? 'text-warning' : 'text-success';
 
               return (
                 <article key={`${tipo}-${id}`} className="group flex flex-col bg-surface border border-border rounded overflow-hidden hover:border-[#0D0D0D] transition-colors duration-150">
-                  <a href={href} className={`block ${isLibro ? 'aspect-[2/3]' : 'aspect-[3/4]'} w-full flex items-end p-3`} style={{ backgroundColor: PLACEHOLDER_COLORS[colorIdx] }} aria-label={`Ver ${producto.titulo}`}>
-                    <span className="text-[9px] font-inter font-medium text-[#5C5C5C] uppercase tracking-widest line-clamp-2">{producto.titulo}</span>
+                  <a href={href} className={`block ${isLibro ? 'aspect-[2/3]' : 'aspect-[3/4]'} w-full overflow-hidden bg-[#F4F1EA]`} aria-label={`Ver ${producto.titulo}`}>
+                    {coverSrc ? (
+                      <img
+                        src={coverSrc}
+                        alt={`Portada de ${producto.titulo}`}
+                        loading="lazy"
+                        decoding="async"
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-[#F4F1EA]" />
+                    )}
                   </a>
                   <div className="p-4 flex flex-col gap-2 flex-1">
                     <a href={href}>

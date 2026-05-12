@@ -1,6 +1,7 @@
 ---
 import type { Libro, Revista } from '../../types/index.js';
 import { getBookCoverSrc } from '../../lib/book-covers.js';
+import { getMagazineCoverSrc } from '../../lib/magazine-covers.js';
 import Badge from './Badge.astro';
 import StockIndicator from './StockIndicator.astro';
 
@@ -24,7 +25,7 @@ const frecuencia = revista?.frecuencia ?? '';
 
 const href = isLibro ? `/libros/${libro!.id_libro}` : `/revistas/${revista!.id_revista}`;
 const aspectRatio = isLibro ? 'aspect-[2/3]' : 'aspect-[3/4]';
-const coverSrc = libro ? getBookCoverSrc(libro) : '';
+const coverSrc = libro ? getBookCoverSrc(libro) : revista ? getMagazineCoverSrc(revista) : '';
 ---
 
 <article class="group flex flex-col bg-surface border border-border rounded overflow-hidden hover:border-primary transition-colors duration-150">

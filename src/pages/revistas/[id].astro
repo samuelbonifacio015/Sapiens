@@ -6,6 +6,7 @@ import StockIndicator from '../../components/ui/StockIndicator.astro';
 import Badge from '../../components/ui/Badge.astro';
 import ProductCard from '../../components/ui/ProductCard.astro';
 import { getRevistaById, getRevistasByCategoria } from '../../lib/db/queries/revistas';
+import { getMagazineCoverSrc } from '../../lib/magazine-covers.js';
 
 const id = Number(Astro.params.id);
 const revista = await getRevistaById(id);
@@ -16,7 +17,7 @@ const related = (await getRevistasByCategoria(revista.id_categoria))
   .slice(0, 4)
   .map(r => ({ producto: r, tipo: 'revista' as const }));
 
-const placeholderBg = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0'][revista.id_revista % 4];
+const coverSrc = getMagazineCoverSrc(revista);
 ---
 
 <BaseLayout title={`${revista.titulo} — Sapiens`}>
@@ -36,13 +37,22 @@ const placeholderBg = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0'][revista.id_re
           <Badge variant="default" class="absolute top-3 left-3 z-10">
             {revista.categoria?.nombre_categoria}
           </Badge>
-          <div
-            class="aspect-[3/4] w-full rounded border border-border flex items-end p-4"
-            style={`background-color: ${placeholderBg}`}
-            role="img"
-            aria-label={`Portada de ${revista.titulo}`}
-          >
-            <span class="text-xs font-inter font-medium text-[#5C5C5C] uppercase tracking-widest">{revista.titulo}</span>
+          <div class="aspect-[3/4] w-full rounded border border-border overflow-hidden bg-[#F4F1EA]">
+            {coverSrc ? (
+              <img
+                src={coverSrc}
+                alt={`Portada de ${revista.titulo}`}
+                class="h-full w-full object-cover"
+                loading="eager"
+                decoding="async"
+              />
+            ) : (
+              <div
+                class="h-full w-full bg-[#F4F1EA]"
+                role="img"
+                aria-label={`Portada no disponible para ${revista.titulo}`}
+              ></div>
+            )}
           </div>
         </div>
       </div>

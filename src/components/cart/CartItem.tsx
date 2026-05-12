@@ -1,6 +1,8 @@
 import { X } from 'lucide-react';
 import type { CartItem as CartItemType } from '../../types/index.js';
 import type { Libro, Revista } from '../../types/index.js';
+import { getBookCoverSrc } from '../../lib/book-covers.js';
+import { getMagazineCoverSrc } from '../../lib/magazine-covers.js';
 
 interface CartItemProps {
   item: CartItemType;
@@ -9,23 +11,33 @@ interface CartItemProps {
   onUpdateQty: (key: string, qty: number) => void;
 }
 
-const PLACEHOLDER_COLORS = ['#E8E0D5', '#D5DDE8', '#D5E8D5', '#E8D5E0'];
-
 export default function CartItem({ item, itemKey, onRemove, onUpdateQty }: CartItemProps) {
   const isLibro = item.tipo === 'libro';
-  const colorIdx = ((item.producto as Libro).id_libro ?? (item.producto as Revista).id_revista ?? 0) % 4;
-  const placeholderBg = PLACEHOLDER_COLORS[colorIdx];
+  const coverSrc = isLibro
+    ? getBookCoverSrc(item.producto as Libro)
+    : getMagazineCoverSrc(item.producto as Revista);
   const subtotal = item.producto.precio * item.cantidad;
   const autorName = isLibro ? (item.producto as Libro).autor?.nombre_autor : null;
 
   return (
     <div className="flex gap-4 py-5 border-b border-border last:border-0">
-      <div
-        className={`flex-shrink-0 w-16 ${isLibro ? 'aspect-[2/3]' : 'aspect-[3/4]'} rounded overflow-hidden`}
-        style={{ backgroundColor: placeholderBg }}
-        role="img"
-        aria-label={`Portada de ${item.producto.titulo}`}
-      />
+      <div className={`flex-shrink-0 w-16 ${isLibro ? 'aspect-[2/3]' : 'aspect-[3/4]'} rounded overflow-hidden bg-[#F4F1EA]`}>
+        {coverSrc ? (
+          <img
+            src={coverSrc}
+            alt={`Portada de ${item.producto.titulo}`}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div
+            className="h-full w-full bg-[#F4F1EA]"
+            role="img"
+            aria-label={`Portada no disponible para ${item.producto.titulo}`}
+          />
+        )}
+      </div>
 
       <div className="flex-1 min-w-0">
         <h3 className="font-playfair font-medium text-text text-base line-clamp-2">{item.producto.titulo}</h3>
