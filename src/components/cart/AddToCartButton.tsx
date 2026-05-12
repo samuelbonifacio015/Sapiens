@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { Libro, Revista } from '../../types/index.js';
 import { useCart } from '../../lib/cart-store.js';
 
@@ -9,7 +9,7 @@ interface AddToCartButtonProps {
   loginHref: string;
   quantity?: number;
   className?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export default function AddToCartButton({

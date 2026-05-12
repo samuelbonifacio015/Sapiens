@@ -28,14 +28,14 @@ test('catalog and detail product actions use cart React components', () => {
 
 test('header shows reactive cart badge and drawer controls', () => {
   assert.match(header, /import HeaderCart from/);
-  assert.match(header, /<HeaderCart\s+client:load/);
+  assert.match(header, /<HeaderCart\b[^>]*client:load/);
   assert.match(header, /cart-update/);
 });
 
 test('cart store caps quantity by stock and publishes updates', () => {
-  assert.match(cartStore, /Math\.min\(stock, currentQty \+ qty\)/);
+  assert.match(cartStore, /Math\.min\(stock, currentQty \+ safeQty\)/);
   assert.match(cartStore, /Math\.min\(stock, Math\.max\(1, cantidad\)\)/);
-  assert.match(cartStore, /new CustomEvent\('cart-update'/);
+  assert.match(cartStore, /new CustomEvent(?:<[^>]+>)?\('cart-update'/);
   assert.match(cartStore, /getProductStock/);
 });
 

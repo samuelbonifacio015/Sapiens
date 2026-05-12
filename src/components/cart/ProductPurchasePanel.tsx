@@ -34,7 +34,7 @@ export default function ProductPurchasePanel({
       return;
     }
     addToCart(producto, tipo, tipo === 'libro' ? quantity : 1);
-    window.location.assign('/carrito');
+    window.setTimeout(() => window.location.assign('/carrito'), 0);
   };
 
   return (
