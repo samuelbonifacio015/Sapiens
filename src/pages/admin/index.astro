@@ -1,87 +1,124 @@
 ---
 import AdminLayout from '../../components/layout/AdminLayout.astro';
 import { getPedidos, getClientes } from '../../lib/db/queries/pedidos';
-import { getLowStockLibros } from '../../lib/db/queries/libros';
-import { getLowStockRevistas } from '../../lib/db/queries/revistas';
+import { getLibros, getLowStockLibros } from '../../lib/db/queries/libros';
+import { getRevistas, getLowStockRevistas } from '../../lib/db/queries/revistas';
 
 const today = new Date().toISOString().split('T')[0];
-const [pedidos, lowLibros, lowRevistas, todosClientes] = await Promise.all([
+const [pedidos, lowLibros, lowRevistas, todosClientes, libros, revistas] = await Promise.all([
   getPedidos(),
-  getLowStockLibros(4),
-  getLowStockRevistas(4),
+  getLowStockLibros(5),
+  getLowStockRevistas(5),
   getClientes(),
+  getLibros(),
+  getRevistas(),
 ]);
 
 const pedidosHoy = pedidos.filter(p => p.fecha === today).length;
-const ingresosMes = pedidos.filter(p => p.estado !== 'cancelado').reduce((sum, p) => sum + p.total, 0);
-const stockBajo = lowLibros.length + lowRevistas.length;
-const clientes = todosClientes.length;
-
-const recentPedidos = pedidos.slice(0, 10);
+const pedidosPendientes = pedidos.filter(p => p.estado === 'pendiente' || p.estado === 'confirmado').length;
+const pedidosActivos = pedidos.filter(p => p.estado !== 'cancelado');
+const ingresosActivos = pedidosActivos.reduce((sum, p) => sum + p.total, 0);
+const stockCritico = lowLibros.length + lowRevistas.length;
+const catalogoTotal = libros.length + revistas.length;
+const recentPedidos = pedidos.slice(0, 8);
 const lowStockItems = [
-  ...lowLibros.map(l => ({ ...l, _tipo: 'libro' })),
-  ...lowRevistas.map(r => ({ ...r, _tipo: 'revista' })),
-].slice(0, 5);
+  ...lowLibros.map(l => ({ titulo: l.titulo, stock: l.stock, tipo: 'Libro' })),
+  ...lowRevistas.map(r => ({ titulo: r.titulo, stock: r.stock, tipo: 'Revista' })),
+].sort((a, b) => a.stock - b.stock).slice(0, 8);
+
+const kpis = [
+  { label: 'Pedidos hoy', value: pedidosHoy, note: 'Carga diaria' },
+  { label: 'Pedidos activos', value: pedidosPendientes, note: 'Pendiente o confirmado' },
+  { label: 'Stock critico', value: stockCritico, note: '5 unidades o menos' },
+  { label: 'Catalogo visible', value: catalogoTotal, note: `${libros.length} libros, ${revistas.length} revistas` },
+  { label: 'Clientes', value: todosClientes.length, note: 'Cuentas registradas' },
+  { label: 'Ingresos activos', value: `S/ ${ingresosActivos.toFixed(0)}`, note: 'Sin cancelados' },
+];
+
+const readiness = [
+  { label: 'Sesion JWT', state: 'Listo', detail: 'Cookie httpOnly, rol USER/ADMIN y JWT_SECRET obligatorio en produccion.', tone: 'success' },
+  { label: 'Rutas privadas', state: 'Listo', detail: '/admin, /mi-cuenta y /checkout pasan por middleware.', tone: 'success' },
+  { label: 'CSRF', state: 'Listo', detail: 'Mutaciones usan token de doble envio con cookie legible.', tone: 'success' },
+  { label: 'Pool MySQL', state: 'Vigilar', detail: 'connectionLimit 10 sirve para demo, no para 8,000 concurrentes.', tone: 'warning' },
+  { label: 'TLS DB', state: 'Pendiente', detail: 'Falta configurar SSL/TLS hacia MySQL administrado.', tone: 'warning' },
+  { label: 'Backups', state: 'Pendiente', detail: 'Falta runbook de snapshots diarios y retencion Azure Blob.', tone: 'warning' },
+  { label: 'Cifrado reposo', state: 'Pendiente', detail: 'Debe quedar cubierto por Azure Database for MySQL.', tone: 'warning' },
+];
 
 const estadoColor: Record<string, string> = {
-  pendiente: 'bg-warning/10 text-warning',
-  confirmado: 'bg-[#0D0D0D]/10 text-[#0D0D0D]',
-  enviado: 'bg-[#0D0D0D]/10 text-[#0D0D0D]',
-  entregado: 'bg-success/10 text-success',
-  cancelado: 'bg-error/10 text-error',
+  pendiente: 'bg-warning/10 text-warning border-warning/20',
+  confirmado: 'bg-primary/10 text-text border-border',
+  enviado: 'bg-primary/10 text-text border-border',
+  entregado: 'bg-success/10 text-success border-success/20',
+  cancelado: 'bg-error/10 text-error border-error/20',
 };
 const estadoLabel: Record<string, string> = {
-  pendiente: 'Pendiente', confirmado: 'Confirmado', enviado: 'En camino', entregado: 'Entregado', cancelado: 'Cancelado',
+  pendiente: 'Pendiente',
+  confirmado: 'Confirmado',
+  enviado: 'En camino',
+  entregado: 'Entregado',
+  cancelado: 'Cancelado',
+};
+const readinessStyle: Record<string, string> = {
+  success: 'border-success/30 bg-success/10 text-success',
+  warning: 'border-warning/30 bg-warning/10 text-warning',
 };
 ---
 
-<AdminLayout title="Dashboard — Admin Sapiens">
-  <div class="p-8">
-    <h1 class="font-playfair font-bold text-3xl text-text mb-8">Dashboard</h1>
-
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-      {[
-        { label: 'Pedidos hoy', value: pedidosHoy, icon: '📦' },
-        { label: 'Ingresos del mes', value: `S/ ${ingresosMes.toFixed(0)}`, icon: '💰' },
-        { label: 'Stock bajo', value: stockBajo, icon: '⚠️' },
-        { label: 'Clientes', value: clientes, icon: '👥' },
-      ].map(kpi => (
-        <div class="bg-surface border border-border rounded p-5">
-          <div class="flex items-start justify-between mb-3">
-            <span class="text-2xl" aria-hidden="true">{kpi.icon}</span>
-          </div>
-          <p class="font-inter font-bold text-2xl text-text">{kpi.value}</p>
-          <p class="font-inter text-xs text-text-muted mt-1">{kpi.label}</p>
+<AdminLayout title="Dashboard - Admin Sapiens">
+  <div class="p-6 lg:p-8">
+    <div class="mb-8 flex flex-col gap-3 border-b border-border pb-6">
+      <p class="font-inter text-xs font-semibold uppercase tracking-[0.22em] text-text-muted">Seguridad y escala</p>
+      <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h1 class="font-playfair font-bold text-3xl text-text">Centro de control Sapiens</h1>
+          <p class="mt-2 max-w-3xl font-inter text-sm leading-6 text-text-muted">
+            Lectura operativa para campanas de alta demanda: pedidos, stock, capacidad y controles exigidos por el informe.
+          </p>
         </div>
-      ))}
+        <div class="border border-border bg-surface px-4 py-3 text-sm font-inter text-text">
+          Objetivo pico: <strong>8,000 usuarios</strong> / 133 ops/s
+        </div>
+      </div>
     </div>
 
-    <div class="grid lg:grid-cols-3 gap-8">
-      <div class="lg:col-span-2">
-        <h2 class="font-inter font-semibold text-text text-base mb-4">Pedidos recientes</h2>
-        <div class="bg-surface border border-border rounded overflow-hidden">
-          <table class="w-full text-sm font-inter">
+    <section class="mb-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-6" aria-label="Indicadores operativos">
+      {kpis.map(kpi => (
+        <div class="border border-border bg-surface p-4">
+          <p class="font-inter text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted">{kpi.label}</p>
+          <p class="mt-3 font-inter text-2xl font-bold text-text">{kpi.value}</p>
+          <p class="mt-1 font-inter text-xs text-text-muted">{kpi.note}</p>
+        </div>
+      ))}
+    </section>
+
+    <div class="grid gap-8 xl:grid-cols-[1.25fr_0.75fr]">
+      <section>
+        <div class="mb-4 flex items-center justify-between gap-4">
+          <h2 class="font-inter text-base font-semibold text-text">Pedidos recientes</h2>
+          <a href="/admin/pedidos" class="font-inter text-xs text-text-muted underline underline-offset-4 hover:text-text">Ver todos</a>
+        </div>
+        <div class="overflow-hidden border border-border bg-surface">
+          <table class="w-full min-w-[680px] text-sm font-inter">
             <thead>
-              <tr class="border-b border-border">
-                <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider"># Pedido</th>
-                <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider hidden sm:table-cell">Cliente</th>
-                <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Total</th>
-                <th class="text-left px-4 py-3 text-text-muted font-medium text-xs uppercase tracking-wider">Estado</th>
+              <tr class="border-b border-border bg-bg">
+                <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted">Pedido</th>
+                <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted">Cliente</th>
+                <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted">Total</th>
+                <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-text-muted">Estado</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-border">
               {recentPedidos.map(pedido => (
                 <tr class="hover:bg-bg transition-colors">
                   <td class="px-4 py-3">
-                    <a href={`/admin/pedidos/${pedido.id_pedido}`} class="text-text font-medium hover:underline">
-                      #{pedido.id_pedido}
-                    </a>
-                    <p class="text-text-muted text-xs mt-0.5">{new Date(pedido.fecha).toLocaleDateString()}</p>
+                    <a href={`/admin/pedidos/${pedido.id_pedido}`} class="font-medium text-text hover:underline">#{pedido.id_pedido}</a>
+                    <p class="mt-1 text-xs text-text-muted">{new Date(pedido.fecha).toLocaleDateString()}</p>
                   </td>
-                  <td class="px-4 py-3 text-text-muted hidden sm:table-cell">{pedido.cliente?.nombre ?? '—'}</td>
-                  <td class="px-4 py-3 text-text font-medium">S/ {pedido.total.toFixed(2)}</td>
+                  <td class="px-4 py-3 text-text-muted">{pedido.cliente?.nombre ?? 'Sin cliente'}</td>
+                  <td class="px-4 py-3 font-medium text-text">S/ {pedido.total.toFixed(2)}</td>
                   <td class="px-4 py-3">
-                    <span class={`px-2 py-0.5 text-xs font-medium rounded ${estadoColor[pedido.estado] ?? 'bg-surface text-text'}`}>
+                    <span class={`inline-flex rounded border px-2.5 py-1 text-xs font-medium ${estadoColor[pedido.estado] ?? 'border-border bg-bg text-text'}`}>
                       {estadoLabel[pedido.estado] ?? pedido.estado}
                     </span>
                   </td>
@@ -89,39 +126,55 @@ const estadoLabel: Record<string, string> = {
               ))}
             </tbody>
           </table>
-          <div class="px-4 py-3 border-t border-border">
-            <a href="/admin/pedidos" class="font-inter text-xs text-text-muted hover:text-text transition-colors">Ver todos los pedidos →</a>
-          </div>
         </div>
-      </div>
+      </section>
 
-      <div>
-        <h2 class="font-inter font-semibold text-text text-base mb-4">Stock bajo</h2>
-        <div class="bg-surface border border-border rounded overflow-hidden">
+      <section>
+        <div class="mb-4 flex items-center justify-between gap-4">
+          <h2 class="font-inter text-base font-semibold text-text">Inventario critico</h2>
+          <a href="/admin/inventario" class="font-inter text-xs text-text-muted underline underline-offset-4 hover:text-text">Inventario</a>
+        </div>
+        <div class="border border-border bg-surface">
           {lowStockItems.length === 0 ? (
-            <div class="p-6 text-center">
-              <p class="font-inter text-text-muted text-sm">Todo en orden ✓</p>
+            <div class="p-6">
+              <p class="font-inter text-sm font-medium text-text">Sin alertas de stock</p>
+              <p class="mt-1 font-inter text-xs text-text-muted">No hay productos por debajo del umbral actual.</p>
             </div>
           ) : (
             <div class="divide-y divide-border">
               {lowStockItems.map(item => (
-                <div class="flex items-center justify-between px-4 py-3">
+                <div class="flex items-center justify-between gap-4 px-4 py-3">
                   <div class="min-w-0">
-                    <p class="font-inter text-sm text-text line-clamp-1">{item.titulo}</p>
-                    <p class="font-inter text-xs text-text-muted mt-0.5">{item._tipo === 'libro' ? 'Libro' : 'Revista'}</p>
+                    <p class="truncate font-inter text-sm font-medium text-text">{item.titulo}</p>
+                    <p class="mt-1 font-inter text-xs text-text-muted">{item.tipo}</p>
                   </div>
-                  <span class="font-inter font-bold text-warning text-sm ml-3 flex-shrink-0">
-                    {item.stock} ud.
-                  </span>
+                  <span class="font-inter text-sm font-bold text-warning">{item.stock}</span>
                 </div>
               ))}
             </div>
           )}
-          <div class="px-4 py-3 border-t border-border">
-            <a href="/admin/inventario" class="font-inter text-xs text-text-muted hover:text-text transition-colors">Ver inventario →</a>
-          </div>
         </div>
-      </div>
+      </section>
     </div>
+
+    <section class="mt-8">
+      <div class="mb-4 flex flex-col gap-1">
+        <h2 class="font-inter text-base font-semibold text-text">Readiness del informe</h2>
+        <p class="font-inter text-sm text-text-muted">Estado visible de los controles necesarios para escalar y proteger Sapiens.</p>
+      </div>
+      <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {readiness.map(item => (
+          <article class="border border-border bg-surface p-4">
+            <div class="flex items-center justify-between gap-3">
+              <h3 class="font-inter text-sm font-semibold text-text">{item.label}</h3>
+              <span class={`inline-flex rounded border px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${readinessStyle[item.tone]}`}>
+                {item.state}
+              </span>
+            </div>
+            <p class="mt-3 font-inter text-sm leading-6 text-text-muted">{item.detail}</p>
+          </article>
+        ))}
+      </div>
+    </section>
   </div>
 </AdminLayout>
