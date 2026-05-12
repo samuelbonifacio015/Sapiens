@@ -20,6 +20,8 @@ export default function MagneticCTA({ href, children, variant = 'primary', targe
   const springX = useSpring(x, { stiffness: 200, damping: 20 });
   const springY = useSpring(y, { stiffness: 200, damping: 20 });
 
+  const resolvedRel = target === '_blank' ? (rel ?? 'noopener noreferrer') : rel;
+
   function handleMouseMove(e: React.MouseEvent<HTMLAnchorElement>) {
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
@@ -44,7 +46,7 @@ export default function MagneticCTA({ href, children, variant = 'primary', targe
       ref={ref}
       href={href}
       target={target}
-      rel={rel}
+      rel={resolvedRel}
       aria-label={ariaLabel}
       style={{ x: springX, y: springY }}
       onMouseMove={handleMouseMove}

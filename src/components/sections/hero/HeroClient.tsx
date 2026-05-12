@@ -17,7 +17,7 @@ export default function HeroClient() {
           <h1 className="font-playfair font-bold text-5xl sm:text-6xl lg:text-[4.5rem] text-[#0D0D0D] leading-[1.05] tracking-tight">
             {headingLines.map(({ text, limeUnderline }, i) => (
               <motion.span
-                key={i}
+                key={text}
                 className="relative block"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -30,7 +30,7 @@ export default function HeroClient() {
                     style={{ bottom: '-4px' }}
                     initial={{ width: 0 }}
                     animate={{ width: '100%' }}
-                    transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.55 }}
+                    transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: i * 0.15 + 0.40 }}
                     aria-hidden="true"
                   />
                 )}
