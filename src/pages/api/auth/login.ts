@@ -2,11 +2,12 @@ import type { APIRoute } from 'astro';
 import { loginSchema } from '../../../lib/validators/auth.js';
 import { findClienteByCorreo } from '../../../lib/repos/clientes.js';
 import { comparePassword, signToken, SESSION_COOKIE, SESSION_MAX_AGE } from '../../../lib/auth.js';
-import { handleApi, json, error } from '../../../lib/http.js';
+import { handleApi, json, error, requireCsrf } from '../../../lib/http.js';
 
 export const prerender = false;
 
 export const POST: APIRoute = ({ request, cookies }) => handleApi(async () => {
+  requireCsrf(request, cookies);
   const { correo, password } = loginSchema.parse(await request.json());
   const u = await findClienteByCorreo(correo);
   if (!u || !u.password_hash || !(await comparePassword(password, u.password_hash))) {

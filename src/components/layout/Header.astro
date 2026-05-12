@@ -200,7 +200,12 @@ const user = Astro.locals.user;
     button.addEventListener('click', async () => {
       button.setAttribute('disabled', 'true');
       try {
-        await fetch('/api/auth/logout', { method: 'POST' });
+        const csrfRes = await fetch('/api/auth/csrf');
+        const { csrfToken } = await csrfRes.json();
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: { 'X-CSRF-Token': csrfToken },
+        });
       } finally {
         window.location.href = '/iniciar-sesion';
       }

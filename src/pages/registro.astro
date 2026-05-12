@@ -5,7 +5,15 @@ import Footer from '../components/layout/Footer.astro';
 import AuthForm from '../components/auth/AuthForm';
 
 const next = Astro.url.searchParams.get('next') ?? undefined;
-const safeNext = next?.startsWith('/') && !next.startsWith('//') ? next : undefined;
+const nextPath = next?.split(/[?#]/)[0].replace(/\/+$/, '') || undefined;
+const safeNext =
+  next?.startsWith('/') &&
+  !next.startsWith('//') &&
+  !next.includes('\\') &&
+  nextPath !== '/iniciar-sesion' &&
+  nextPath !== '/registro'
+    ? next
+    : undefined;
 
 if (Astro.locals.user?.rol === 'ADMIN') {
   return Astro.redirect('/admin');

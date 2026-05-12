@@ -20,7 +20,9 @@ const fieldClass =
 const labelClass = 'text-sm font-medium font-inter text-text';
 
 const getSafeNext = (next?: string) => {
-  if (!next || !next.startsWith('/') || next.startsWith('//')) return null;
+  if (!next || !next.startsWith('/') || next.startsWith('//') || next.includes('\\')) return null;
+  const path = next.split(/[?#]/)[0].replace(/\/+$/, '') || '/';
+  if (path === '/iniciar-sesion' || path === '/registro') return null;
   return next;
 };
 
@@ -35,6 +37,14 @@ const getFriendlyError = (status: number, data: AuthResponse) => {
     return 'Revisa los datos ingresados e intentalo nuevamente.';
   }
   return data.error || 'No pudimos procesar la solicitud. Intentalo nuevamente.';
+};
+
+const getCsrfToken = async () => {
+  const res = await fetch('/api/auth/csrf');
+  if (!res.ok) throw new Error('csrf');
+  const data = (await res.json()) as { csrfToken?: string };
+  if (!data.csrfToken) throw new Error('csrf');
+  return data.csrfToken;
 };
 
 export default function AuthForm({ mode, next }: AuthFormProps) {
@@ -87,9 +97,10 @@ export default function AuthForm({ mode, next }: AuthFormProps) {
         };
 
     try {
+      const csrfToken = await getCsrfToken();
       const res = await fetch(isRegister ? '/api/auth/register' : '/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
         body: JSON.stringify(payload),
       });
       const data = (await res.json().catch(() => ({}))) as AuthResponse;

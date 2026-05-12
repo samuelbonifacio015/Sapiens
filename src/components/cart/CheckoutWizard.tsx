@@ -47,9 +47,12 @@ export default function CheckoutWizard() {
           cantidad: i.cantidad,
         })),
       };
+      const csrfRes = await fetch('/api/auth/csrf');
+      if (!csrfRes.ok) throw new Error('No se pudo preparar la sesion de compra');
+      const { csrfToken } = await csrfRes.json();
       const res = await fetch('/api/pedidos', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
         body: JSON.stringify(payload),
       });
       if (res.status === 401) {

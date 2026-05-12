@@ -1,13 +1,14 @@
 import type { APIRoute } from 'astro';
 import { findAllCategorias, createCategoria } from '../../../lib/repos/categorias.js';
 import { categoriaCreateSchema } from '../../../lib/validators/categoria.js';
-import { handleApi, json, requireAdmin } from '../../../lib/http.js';
+import { handleApi, json, requireAdmin, requireCsrf } from '../../../lib/http.js';
 
 export const prerender = false;
 
 export const GET: APIRoute = () => handleApi(async () => json(await findAllCategorias()));
 
-export const POST: APIRoute = ({ request, locals }) => handleApi(async () => {
+export const POST: APIRoute = ({ request, cookies, locals }) => handleApi(async () => {
+  requireCsrf(request, cookies);
   requireAdmin(locals);
   const body = categoriaCreateSchema.parse(await request.json());
   const id = await createCategoria(body);

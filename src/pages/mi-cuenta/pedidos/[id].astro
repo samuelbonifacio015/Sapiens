@@ -7,8 +7,12 @@ import { getLibros } from '../../../lib/db/queries/libros';
 import { getRevistas } from '../../../lib/db/queries/revistas';
 
 const id = Number(Astro.params.id);
+const user = Astro.locals.user;
+if (!user) return Astro.redirect(`/iniciar-sesion?next=/mi-cuenta/pedidos/${id}`);
+
 const [pedido, libros, revistas] = await Promise.all([getPedidoById(id), getLibros(), getRevistas()]);
 if (!pedido) return Astro.redirect('/mi-cuenta/pedidos');
+if (pedido.id_cliente !== user.id) return Astro.redirect('/mi-cuenta/pedidos');
 
 const estadoColor: Record<string, string> = {
   pendiente: 'bg-warning text-[#0D0D0D]',
